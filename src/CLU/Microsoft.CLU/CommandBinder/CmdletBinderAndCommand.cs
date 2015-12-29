@@ -47,32 +47,6 @@ namespace Microsoft.CLU.CommandBinder
         #endregion
 
         /// <summary>
-        /// Creates an instance of CmdletBinderAndCommand with an alreadly rsolved Cmdlet.
-        /// </summary>
-        /// <param name="commandConfiguration">The command configuration</param>
-        /// <param name="runtime">The runtime</param>
-        /// <param name="cmdletValue">The resolved Cmdlet</param>
-        public CmdletBinderAndCommand(ConfigurationDictionary commandConfiguration, ICommandRuntime runtime, CmdletValue cmdletValue)
-        {
-            Debug.Assert(commandConfiguration != null);
-            Debug.Assert(runtime != null);
-            Debug.Assert(cmdletValue != null);
-            Debug.Assert(cmdletValue.Package != null);
-            Debug.Assert(cmdletValue.LoadCmdlet() != null);
-
-            _runtime = runtime;
-            _commandConfiguration = commandConfiguration;
-            _staticParameterBindInProgress = true;
-            InitCmdlet(cmdletValue.LoadCmdlet(), cmdletValue.PackageAssembly.FullPath);
-            Action<Type, uint, string> discriminatorBindFinished = (Type cmdletType, uint seekBackOffset, string fullPath) =>
-            {
-                // NOP
-            };
-
-            _discriminatorBinder = new DiscriminatorBinder(_commandConfiguration.GetListValue(Constants.CmdletModulesConfigKey), discriminatorBindFinished, cmdletValue);
-        }
-
-        /// <summary>
         /// Creates an instance of CmdletBinderAndCommand.
         /// </summary>
         /// <param name="commandConfiguration">The command configuration</param>
@@ -179,18 +153,6 @@ namespace Microsoft.CLU.CommandBinder
 
         #region ICommand implementation
 
-        /// <summary>
-        /// Tells whether the command is synchronous or asynchronous.
-        /// </summary>
-        public bool IsAsync
-        {
-            get
-            {
-                // The Cmdlet programming model is synchronous.
-                return false;
-            }
-        }
-
         public bool SupportsAutomaticHelp
         {
             get
@@ -246,14 +208,6 @@ namespace Microsoft.CLU.CommandBinder
             {
                 _cmdlet.CommandRuntime.WriteError(new ErrorRecord(exception, "", ErrorCategory.InvalidResult, _cmdlet));
             }
-        }
-
-        /// <summary>
-        /// Invokes an asynchronous command.
-        /// </summary>
-        public Task InvokeAsync()
-        {
-            throw new InvalidOperationException(Strings.CmdletBinderAndCommand_InvokeAsync_CmdletNotSupportAsyncInvoke);
         }
 
         #endregion

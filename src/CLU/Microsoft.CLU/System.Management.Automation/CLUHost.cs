@@ -45,16 +45,6 @@ namespace System.Management.Automation.Host
                 _doVerbose = Constants.CmdletPreferencesContinue;
         }
 
-        internal CLUHost(string[] args, HostStreamInfo hostStreamInfo, string debugPreference, string verbosePreference)
-        {
-            Debug.Assert(hostStreamInfo != null);
-
-            _hostStreamInfo = hostStreamInfo;
-            _ui = new HostUserInterface(this, hostStreamInfo.DataStream);
-            _doDebug = debugPreference;
-            _doVerbose = verbosePreference;
-        }
-
         /// <summary>
         /// ToString() override.
         /// </summary>
@@ -88,43 +78,11 @@ namespace System.Management.Automation.Host
         /// <remarks>If this is true, your code is not doing console I/O</remarks>
         public override bool IsOutputRedirected { get { return _hostStreamInfo.IsOutputRedirected; } }
 
-        public override CultureInfo CurrentCulture
-        {
-            get
-            {
-                return CultureInfo.CurrentCulture;
-            }
-        }
-
-        public override CultureInfo CurrentUICulture
-        {
-            get
-            {
-                return CultureInfo.CurrentUICulture;
-            }
-        }
-
         public PSHost Host
         {
             get
             {
                 return this;
-            }
-        }
-
-        /// <summary>
-        /// Private field backing InstanceId property.
-        /// </summary>
-        private Guid _id = Guid.NewGuid();
-
-        /// <summary>
-        /// The host instance ID.
-        /// </summary>
-        public override Guid InstanceId
-        {
-            get
-            {
-                return _id;
             }
         }
 
@@ -533,18 +491,6 @@ namespace System.Management.Automation.Host
             }
 
             /// <summary>
-            /// Prompt.
-            /// </summary>
-            /// <param name="caption">The caption</param>
-            /// <param name="message">The message</param>
-            /// <param name="descriptions">The field discriptions</param>
-            /// <returns></returns>
-            public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
-            {
-                throw new NotImplementedException("Prompt");
-            }
-
-            /// <summary>
             /// Prompt for choice.
             /// </summary>
             /// <param name="caption">The caption</param>
@@ -603,21 +549,6 @@ namespace System.Management.Automation.Host
                 Console.Error.Write("Password: ");
 
                 return new PSCredential(id, ReadLine('*'));
-            }
-
-            /// <summary>
-            /// Prompt for credentails.
-            /// </summary>
-            /// <param name="caption">The caption</param>
-            /// <param name="message">The message</param>
-            /// <param name="userName">The user name</param>
-            /// <param name="targetName">The target name</param>
-            /// <param name="allowedCredentialTypes">The supported credentials types</param>
-            /// <param name="options">The UI options</param>
-            /// <returns>The credentails</returns>
-            public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
-            {
-                return PromptForCredential(caption, message, userName, targetName);
             }
 
             /// <summary>

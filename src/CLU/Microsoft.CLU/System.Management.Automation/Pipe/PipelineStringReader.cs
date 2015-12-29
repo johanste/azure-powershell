@@ -43,17 +43,6 @@ namespace System.Management.Automation.Runspaces
         }
 
         /// <summary>
-        /// The max capacity of the pipe.
-        /// </summary>
-        public override int MaxCapacity
-        {
-            get
-            {
-                return _pipe.MaxCapacity;
-            }
-        }
-
-        /// <summary>
         /// Creates an instance of PipelineStringReader
         /// </summary>
         /// <param name="pipe">The pipe</param>

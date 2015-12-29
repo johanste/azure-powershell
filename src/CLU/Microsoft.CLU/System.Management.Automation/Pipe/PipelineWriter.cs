@@ -18,11 +18,6 @@ namespace System.Management.Automation.Runspaces
         public abstract bool IsOpen { get; }
 
         /// <summary>
-        /// The max capacity of the pipe.
-        /// </summary>
-        public abstract int MaxCapacity { get; }
-
-        /// <summary>
         /// Create an instance of PipelineWriter.
         /// </summary>
         protected PipelineWriter()
@@ -47,9 +42,5 @@ namespace System.Management.Automation.Runspaces
         /// </summary>
         public abstract void Flush();
 
-        /// <summary>
-        /// Closes the write end.
-        /// </summary>
-        public abstract void Close();
     }
 }

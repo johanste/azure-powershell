@@ -6,9 +6,6 @@ namespace System.Management.Automation.Host
     {
         protected PSHost() { }
 
-        public abstract CultureInfo CurrentCulture { get; }
-        public abstract CultureInfo CurrentUICulture { get; }
-        public abstract Guid InstanceId { get; }
         public abstract string Name { get; }
         public abstract PSHostUserInterface UI { get; }
         public abstract Version Version { get; }

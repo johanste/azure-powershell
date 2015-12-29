@@ -24,11 +24,6 @@ namespace System.Management.Automation.Runspaces
         public abstract bool IsOpen { get; }
 
         /// <summary>
-        /// The max capacity of the pipe.
-        /// </summary>
-        public abstract int MaxCapacity { get; }
-
-        /// <summary>
         /// Create an instance of PipelineReader.
         /// </summary>
         protected PipelineReader()

@@ -3,7 +3,6 @@
     [Flags]
     public enum ShouldProcessReason
     {
-        None = 0,
-        WhatIf = 1
+        None = 0
     }
 }
