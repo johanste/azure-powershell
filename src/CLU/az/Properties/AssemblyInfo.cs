@@ -1,16 +1,15 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("CLU")]
+[assembly: AssemblyTitle("Az")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CLU")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
+[assembly: AssemblyProduct("Az")]
+[assembly: AssemblyCopyright("Copyright Microsoft ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7004a19e-42d8-4b51-9ced-3ab3e9abd96f")]
+[assembly: Guid("42A09827-2C08-4F37-BE0C-D4203C125899")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -34,7 +33,3 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-
-// The friend assemblies of Microsoft.CLU
-[assembly: InternalsVisibleTo("Microsoft.CLU.CommandPackage")]
-[assembly: InternalsVisibleTo("Microsoft.CLU.Tests")]

@@ -287,23 +287,12 @@ namespace Microsoft.Azure.Commands.Common.Test.Mocks
 
             class MockPSHostUI : PSHostUserInterface
             {
-                public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
-                {
-                    return new Dictionary<string, PSObject>();
-                }
-
                 public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
                 {
                     return 0;
                 }
 
                 public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName)
-                {
-                    return new PSCredential("user@contoso.org", "P@$$w0rd!");
-                }
-
-                public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName,
-                    PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
                 {
                     return new PSCredential("user@contoso.org", "P@$$w0rd!");
                 }

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using System.Reflection;
 
 namespace Microsoft.CLU.Common
 {
@@ -36,22 +38,20 @@ namespace Microsoft.CLU.Common
             {
                 var cmdletIdentifier = _cmdletIdentifier.Split(Constants.CmdletIndexItemValueSeparator);
                 Debug.Assert(cmdletIdentifier.Length == 2);
-                if (this.PackageAssembly == null)
+
+                foreach (var assembly in Package.CommandAssemblies)
                 {
-                    this.PackageAssembly = Package.LoadAssembly(cmdletIdentifier[0]);
+                    if (String.Equals(assembly.GetName().Name, cmdletIdentifier[0], StringComparison.OrdinalIgnoreCase))
+                    {
+                        _cmdlet = assembly.GetExportedTypes().FirstOrDefault((t) => t.FullName == cmdletIdentifier[1]);
+                        break;
+                    }
                 }
-                Debug.Assert(this.PackageAssembly.Assembly != null);
-                _cmdlet = this.PackageAssembly.Assembly.GetType(cmdletIdentifier[1]);
             }
 
             return _cmdlet;
         }
 
-        public void Unload()
-        {
-        }
-
-        public PackageAssembly PackageAssembly { get; private set;  }
 
         /// <summary>
         /// The LocalPackage instance in which the Cmdlet exists.

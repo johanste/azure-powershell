@@ -45,16 +45,6 @@ namespace System.Management.Automation.Host
                 _doVerbose = Constants.CmdletPreferencesContinue;
         }
 
-        internal CLUHost(string[] args, HostStreamInfo hostStreamInfo, string debugPreference, string verbosePreference)
-        {
-            Debug.Assert(hostStreamInfo != null);
-
-            _hostStreamInfo = hostStreamInfo;
-            _ui = new HostUserInterface(this, hostStreamInfo.DataStream);
-            _doDebug = debugPreference;
-            _doVerbose = verbosePreference;
-        }
-
         /// <summary>
         /// ToString() override.
         /// </summary>
@@ -424,7 +414,10 @@ namespace System.Management.Automation.Host
         /// the progress of the operation being performed by the cmdlet</param>
         public void WriteProgress(ProgressRecord progressRecord)
         {
-            _ui.WriteProgress(0, progressRecord);
+            if (!IsOutputRedirected)
+            {
+                _ui.WriteProgress(0, progressRecord);
+            }
         }
 
         /// <summary>
@@ -435,7 +428,10 @@ namespace System.Management.Automation.Host
         /// the progress of the operation being performed by the cmdlet</param>
         public void WriteProgress(long sourceId, ProgressRecord progressRecord)
         {
-            _ui.WriteProgress(sourceId, progressRecord);
+            if (!IsOutputRedirected)
+            {
+                _ui.WriteProgress(sourceId, progressRecord);
+            }
         }
 
         /// <summary>
@@ -533,18 +529,6 @@ namespace System.Management.Automation.Host
             }
 
             /// <summary>
-            /// Prompt.
-            /// </summary>
-            /// <param name="caption">The caption</param>
-            /// <param name="message">The message</param>
-            /// <param name="descriptions">The field discriptions</param>
-            /// <returns></returns>
-            public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
-            {
-                throw new NotImplementedException("Prompt");
-            }
-
-            /// <summary>
             /// Prompt for choice.
             /// </summary>
             /// <param name="caption">The caption</param>
@@ -605,20 +589,6 @@ namespace System.Management.Automation.Host
                 return new PSCredential(id, ReadLine('*'));
             }
 
-            /// <summary>
-            /// Prompt for credentails.
-            /// </summary>
-            /// <param name="caption">The caption</param>
-            /// <param name="message">The message</param>
-            /// <param name="userName">The user name</param>
-            /// <param name="targetName">The target name</param>
-            /// <param name="allowedCredentialTypes">The supported credentials types</param>
-            /// <param name="options">The UI options</param>
-            /// <returns>The credentails</returns>
-            public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
-            {
-                return PromptForCredential(caption, message, userName, targetName);
-            }
 
             /// <summary>
             /// Read a line from STDIN.
@@ -703,7 +673,10 @@ namespace System.Management.Automation.Host
             /// the progress of the operation being performed by the cmdlet</param>
             public override void WriteProgress(long sourceId, ProgressRecord record)
             {
-                _dataStream.WriteProgress(sourceId, record);
+                if (!_host.IsOutputRedirected)
+                {
+                    _dataStream.WriteProgress(sourceId, record);
+                }
             }
 
             /// <summary>

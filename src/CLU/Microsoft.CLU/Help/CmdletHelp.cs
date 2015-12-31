@@ -1,4 +1,6 @@
-﻿using Microsoft.CLU.Common;
+﻿#if IMPLEMENT_HELP
+
+using Microsoft.CLU.Common;
 using Microsoft.CLU.Metadata;
 using Microsoft.CLU.Common.Properties;
 using System;
@@ -36,11 +38,11 @@ namespace Microsoft.CLU.Help
         /// existing command, help for only that command is displayed. If none match the arguments exactly,
         /// an error is generated.
         /// </remarks>
-        public static IEnumerable<string> Generate(Func<string, string, bool, bool, string> format, IEnumerable<string> modules, string[] arguments, bool prefix)
+        public static IEnumerable<string> Generate(Func<string, string, bool, bool, string> format, string[] arguments, bool prefix)
         {
             var result = new List<string>();
 
-            var matches = FindMatches(modules, arguments);
+            var matches = FindMatches(arguments);
 
             if (matches != null)
             {
@@ -172,18 +174,11 @@ namespace Microsoft.CLU.Help
             result.Add("");
         }
 
-        private static IEnumerable<InstalledModuleInfo> FindMatches(IEnumerable<string> modules, string[] args)
+        private static IEnumerable<InstalledModuleInfo> FindMatches(IEnumerable<string> paths, string[] args)
         {
-            var matches = InstalledModuleInfo.Enumerate(modules, args).ToArray();
-
-            if (matches.Length == 0)
+            foreach (var path in paths)
             {
-                return null;
-            }
-
-            foreach (var module in matches)
-            {
-                var mappings = ConfigurationDictionary.Load(Path.Combine(module.Package.FullPath, Constants.IndexFolder, Constants.NameMappingFileName));
+                var mappings = ConfigurationDictionary.Load(Path.Combine(path, Constants.IndexFolder, Constants.NameMappingFileName));
 
                 foreach (var cmd in module.Cmdlets.Select(c => { c.CommandName = mappings[c.Keys]; return c; }).GroupBy(c => c.AssemblyName))
                 {
@@ -277,3 +272,4 @@ namespace Microsoft.CLU.Help
         }
     }
 }
+#endif

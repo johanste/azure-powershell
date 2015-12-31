@@ -39,4 +39,5 @@ using System.Runtime.InteropServices;
 [assembly: InternalsVisibleTo("clurun")]
 [assembly: InternalsVisibleTo("Microsoft.CLU")]
 [assembly: InternalsVisibleTo("Microsoft.CLU.Run")]
+[assembly: InternalsVisibleTo("Microsoft.CLU.CommandPackage")]
 [assembly: InternalsVisibleTo("Microsoft.CLU.Tests")]

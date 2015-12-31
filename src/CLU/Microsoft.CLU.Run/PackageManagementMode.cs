@@ -1,4 +1,5 @@
-﻿using CLU.Packages;
+﻿#if ENABLE_PACKAGEMGMT
+using CLU.Packages;
 
 using Microsoft.CLU.Common;
 using Microsoft.CLU.Common.Properties;
@@ -33,7 +34,7 @@ namespace Microsoft.CLU.Run
         /// IRunMode implementation for package managment.
         /// </summary>
         /// <param name="arguments">The arguments</param>
-        public Microsoft.CLU.CommandModelErrorCode Run(string[] arguments)
+        public int Run(string[] arguments)
         {
             _packagesRootPath = CLUEnvironment.GetPackagesRootPath();
             try
@@ -44,13 +45,13 @@ namespace Microsoft.CLU.Run
             {
                 CLUEnvironment.Console.WriteErrorLine(tie.InnerException.Message);
                 CLUEnvironment.Console.WriteDebugLine($"{tie.InnerException.GetType().FullName}\n{tie.InnerException.StackTrace}");
-                return Microsoft.CLU.CommandModelErrorCode.InternalFailure;
+                return 4; //  Microsoft.CLU.CommandModelErrorCode.InternalFailure;
             }
             catch (Exception exc)
             {
                 CLUEnvironment.Console.WriteErrorLine(exc.Message);
                 CLUEnvironment.Console.WriteDebugLine($"{exc.GetType().FullName}\n{exc.StackTrace}");
-                return Microsoft.CLU.CommandModelErrorCode.InternalFailure;
+                return 4; // Microsoft.CLU.CommandModelErrorCode.InternalFailure;
             }
 
             try
@@ -77,7 +78,7 @@ namespace Microsoft.CLU.Run
                                     arguments[argsBase + 1].StartsWith("-", StringComparison.Ordinal))
                                 {
                                     CLUEnvironment.Console.WriteLine(Strings.PackageManagementMode_Run_VersionIdMissing);
-                                    return Microsoft.CLU.CommandModelErrorCode.MissingParameters;
+                                    return 3; // Microsoft.CLU.CommandModelErrorCode.MissingParameters;
                                 }
                                 version = arguments[argsBase + 1];
                                 argsBase += 2;
@@ -145,16 +146,16 @@ namespace Microsoft.CLU.Run
             {
                 CLUEnvironment.Console.WriteErrorLine(tie.InnerException.Message);
                 CLUEnvironment.Console.WriteDebugLine($"{tie.InnerException.GetType().FullName}\n{tie.InnerException.StackTrace}");
-                return Microsoft.CLU.CommandModelErrorCode.InternalFailure;
+                return 4; // Microsoft.CLU.CommandModelErrorCode.InternalFailure;
             }
             catch (Exception exc)
             {
                 CLUEnvironment.Console.WriteErrorLine(exc.Message);
                 CLUEnvironment.Console.WriteDebugLine($"{exc.GetType().FullName}\n{exc.StackTrace}");
-                return Microsoft.CLU.CommandModelErrorCode.InternalFailure;
+                return 4; //  Microsoft.CLU.CommandModelErrorCode.InternalFailure;
             }
 
-            return CommandModelErrorCode.Success;
+            return 0; // CommandModelErrorCode.Success;
         }
 
         /// <summary>
@@ -622,3 +623,4 @@ namespace Microsoft.CLU.Run
 #endregion
     }
 }
+#endif

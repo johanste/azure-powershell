@@ -1,0 +1,26 @@
+﻿{
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
+  "dependencies": {
+    "Microsoft.NETCore": "5.0.1-beta-23516",
+    "Microsoft.NETCore.Runtime": "1.0.1-beta-23516",
+    "Microsoft.NETCore.Platforms": "1.0.1-beta-23516",
+    "Microsoft.NETCore.Runtime.CoreCLR": "1.0.1-beta-23516",
+    "System.Console":  "4.0.0-beta-23516",
+    "Microsoft.Framework.CommandLineUtils.Sources": "1.0.0-beta5"
+  },
+  "frameworks": {
+    "dnxcore50": { }
+  },
+  "runtimes": {
+    "osx.10.10-x64": { },
+    "ubuntu.14.04-x64": { },
+    "win7-x64": { },
+    "win7-x86": { }
+  },
+  "compile": [
+    "*.cs",
+    "Properties/*.cs"
+  ]
+}

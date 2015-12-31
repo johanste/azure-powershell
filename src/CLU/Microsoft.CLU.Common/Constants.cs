@@ -17,11 +17,6 @@ namespace Microsoft.CLU.Common
         public const string CLUConfigFileName = "msclu.cfg";
 
         /// <summary>
-        /// The standard name of a command index file on disk.
-        /// </summary>
-        internal const string StaticCommandIndex = "_index";
-
-        /// <summary>
         /// The standard name of a cmdlet index file on disk.
         /// </summary>
         internal const string CmdletsIndexFileName = "_cmdlets.idx";

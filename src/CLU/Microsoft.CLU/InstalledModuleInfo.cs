@@ -11,38 +11,26 @@ namespace Microsoft.CLU
         public LocalPackage Package { get; set; }
         public IList<InstalledCmdletInfo> Cmdlets { get; set; }
 
-        public static IEnumerable<InstalledModuleInfo> Enumerate(IEnumerable<string> moduleNames, IEnumerable<string> commandDiscriminators)
+        public static IEnumerable<InstalledModuleInfo> Enumerate(CmdletLocalPackage package, IEnumerable<string> commandDiscriminators)
         {
             var installedModuleInfos = new List<InstalledModuleInfo>();
 
-            foreach (var packageName in moduleNames)
+            var matchedCmdlets = package.FindMatchingCommandlets(commandDiscriminators, false);
+            if (matchedCmdlets.Count() > 0)
             {
-                var package = LocalPackage.LoadCmdletPackage(packageName);
-                if (package != null)
+                var module = new InstalledModuleInfo { Package = package, Cmdlets = new List<InstalledCmdletInfo>() };
+                foreach (var entry in matchedCmdlets)
                 {
-                    var matchedCmdlets = package.FindMatchingCmdlets(commandDiscriminators);
-                    if (matchedCmdlets.Count() > 0)
+       
+                    module.Cmdlets.Add(new InstalledCmdletInfo
                     {
-                        var module = new InstalledModuleInfo { Package = package, Cmdlets = new List<InstalledCmdletInfo>() };
-                        foreach (var entry in matchedCmdlets)
-                        {
-                            var cmdletIdentifier = entry.Value.Split(Constants.CmdletIndexItemValueSeparator);
-                            Debug.Assert(cmdletIdentifier.Length == 2);
-                            var packageAssembly = package.LoadAssembly(cmdletIdentifier[0]);
-                            Debug.Assert(packageAssembly.Assembly != null);
-                            var cmdletType = packageAssembly.Assembly.GetType(cmdletIdentifier[1]);
-
-                            module.Cmdlets.Add(new InstalledCmdletInfo
-                            {
-                                Keys = entry.Key,
-                                AssemblyName = cmdletIdentifier[0],
-                                Type = cmdletType
-                            });
-                        }
-
-                        installedModuleInfos.Add(module);
-                    }
+                        Keys = String.Join(";", entry.CommandDiscriminators),
+                        AssemblyName = entry.Package.DefaultAssembly.GetName().Name,
+                        Type = entry.LoadCmdlet()
+                    });
                 }
+
+                installedModuleInfos.Add(module);
             }
 
             return installedModuleInfos;

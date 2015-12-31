@@ -8,10 +8,8 @@ namespace System.Management.Automation.Host
     {
         protected PSHostUserInterface() { }
 
-        public abstract Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions);
         public abstract int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice);
         public abstract PSCredential PromptForCredential(string caption, string message, string userName, string targetName);
-        public abstract PSCredential PromptForCredential(string caption, string message, string userName, string targetName, PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options);
         public abstract string ReadLine();
         public abstract void Write(string value);
         public abstract void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value);

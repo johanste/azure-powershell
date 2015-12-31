@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if ENABLE_PACKAGEMGMT
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NuGet.Commands;
@@ -242,3 +243,4 @@ namespace CLU.Packages
 
     }
 }
+#endif

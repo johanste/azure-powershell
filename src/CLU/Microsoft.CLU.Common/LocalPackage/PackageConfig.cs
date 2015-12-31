@@ -1,34 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+using System.Reflection;
 
 namespace Microsoft.CLU.Common
 {
     /// <summary>
     /// Type represents package configuration.
     /// </summary>
-    internal class PackageConfig : Config
+    public class PackageConfig
     {
         /// <summary>
         /// Private constructor to ensure class instances created only via
         /// PackageConfig::Load static method.
         /// </summary>
-        private PackageConfig(string configFilePath) : base(configFilePath)
-        { }
-
-        /// <summary>
-        /// Get package configuration of a package.
-        /// </summary>
-        /// <param name="packageFullPath">The absolute path to packge root directory.</param>
-        /// <returns>The package configuration</returns>
-        public static PackageConfig Load(string packageFullPath)
+        public PackageConfig(string packageName, IEnumerable<Assembly> commandAssemblies, string nounPrefix = null, bool nounFirst = true) 
         {
-            Debug.Assert(!string.IsNullOrEmpty(packageFullPath));
-
-            var configFilePath = Path.Combine(packageFullPath, Common.Constants.ContentFolder, Common.Constants.PkgConfigFileName);
-            if (!File.Exists(configFilePath))
-                return null;
-            return new PackageConfig(configFilePath);
+            this.Name = packageName;
+            this.CommandAssemblies = commandAssemblies;
+            this.NounPrefix = nounPrefix;
+            this.NounFirst = nounFirst;
         }
 
         /// <summary>
@@ -36,110 +25,39 @@ namespace Microsoft.CLU.Common
         /// </summary>
         public string Name
         {
-            get
-            {
-                string nameConfigValue = null;
-                Items.TryGetValue("Name", out nameConfigValue);
-                return nameConfigValue;
-            }
+            get; private set;
         }
 
         /// <summary>
         /// The package noun prefix.
         /// </summary>
-        public string NounPrefix
-        {
-            get
-            {
-                string nounPrefixConfigValue = null;
-                Items.TryGetValue(Common.Constants.CmdletNounPrefixConfigKey, out nounPrefixConfigValue);
-                return nounPrefixConfigValue;
-            }
-        }
+        public string NounPrefix { get; private set; }
+            
 
         /// <summary>
         /// The package verb/noun order.
         /// </summary>
-        public bool NounFirst
-        {
-            get
-            {
-                string nounFirstConfigValue = null;
-                if (Items.TryGetValue(Common.Constants.CmdletNounFirstConfigKey, out nounFirstConfigValue))
-                {
-                    bool nounFirst = false;
-                    bool.TryParse(nounFirstConfigValue.ToLowerInvariant(), out nounFirst);
-                    return nounFirst;
-                }
-
-                return false;
-            }
-        }
-
+        public bool NounFirst { get; private set;  }
+        
         /// <summary>
         /// Backing field for CommandAssemblies property.
         /// </summary>
-        private IEnumerable<string> _commandAssemblies;
+        private List<Assembly> _commandAssemblies;
         /// <summary>
         /// Collection of path to command assemblies in the package. Each path should
         /// be relative to the package root folder '$root\packages\package-name'.
         /// The assembly name (the last segment of the path) must have extension (.dll).
         /// e.g. lib/net452/Contoso.SystemUtils.dll
         /// </summary>
-        public IEnumerable<string> CommandAssemblies
+        public IEnumerable<Assembly> CommandAssemblies
         {
             get
             {
-                if (_commandAssemblies == null)
-                {
-                    _commandAssemblies = GetListValue("CommandAssemblies");
-                }
-
                 return _commandAssemblies;
             }
-        }
-
-        /// <summary>
-        /// Backing field for OnInstall property.
-        /// </summary>
-        private IEnumerable<string> _onInstall;
-        /// <summary>
-        /// Collection of fully qualified method name that needs to be invoked as a part
-        /// of package installation.
-        /// Format of fully qualified method name is Namespace.ClassName.MethodName.
-        /// </summary>
-        public IEnumerable<string> OnInstall
-        {
-            get
+            set
             {
-                if (_onInstall == null)
-                {
-                    _onInstall = GetListValue("OnInstall");
-                }
-
-                return _onInstall;
-            }
-        }
-
-        /// <summary>
-        /// Backing field for OnUpdate property.
-        /// </summary>
-        private IEnumerable<string> _onUpdate;
-        /// <summary>
-        /// Collection of fully qualified method name that needs to be invoked as a part of
-        /// package upgrade.
-        /// Format of fully qualified method name is Namespace.ClassName.MethodName.
-        /// </summary>
-        public IEnumerable<string> OnUpdate
-        {
-            get
-            {
-                if (_onUpdate == null)
-                {
-                    _onUpdate = GetListValue("OnUpdate");
-                }
-
-                return _onUpdate;
+                this._commandAssemblies = new List<Assembly>(value);
             }
         }
     }

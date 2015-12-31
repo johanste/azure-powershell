@@ -14,7 +14,11 @@
       }
     }
   },
+  "compilationOptions": {
+    "emitEntryPoint": true
+  },
   "dependencies": {
-    "Microsoft.CLU": ""
+    "Microsoft.CLU": "",
+    "Microsoft.CLU.CommandPackage": ""
   }
 }

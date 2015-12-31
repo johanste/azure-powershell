@@ -20,15 +20,13 @@ namespace Microsoft.CLU
         /// </summary>
         /// <param name="package">The package</param>
         /// <param name="resolver">The assembly resolver</param>
-        internal static void CreateIndexes(LocalPackage package, AssemblyResolver resolver)
+        internal static void CreateIndexes(LocalPackage package)
         {
             Debug.Assert(package != null);
-            Debug.Assert(resolver != null);
             var indexFolderPath = GetIndexDirectoryPath(package);
             if (!Directory.Exists(indexFolderPath))
                 Directory.CreateDirectory(indexFolderPath);
-            BuildStaticCommandIndex(package, resolver);
-            BuildCmdletIndex(package, resolver);
+            BuildCmdletIndex(package);
         }
 
         /// <summary>
@@ -53,48 +51,16 @@ namespace Microsoft.CLU
         }
 
         /// <summary>
-        /// Index static commands in the given package.
-        /// </summary>
-        /// <param name="package">The package</param>
-        /// <param name="resolver">The assembly resolver</param>
-        private static void BuildStaticCommandIndex(LocalPackage package, AssemblyResolver resolver)
-        {
-            var indexFilePath = Path.Combine(package.FullPath, Constants.IndexFolder, Constants.StaticCommandIndex + Constants.IndexFileExtension);
-
-            if (File.Exists(indexFilePath)) return;
-
-            CLUEnvironment.Console.WriteLine($"Building indexes for {package.Name}");
-
-            var pkgAssemblies = package.LoadCommandAssemblies(resolver);
-
-            var missingAssemblies = pkgAssemblies.Where(a => a.Assembly == null).Select(a => a.Name);
-            if (missingAssemblies.Any())
-            {
-                throw new DllNotFoundException(string.Format(Strings.IndexBuilder_BuildStaticCommandIndex_MissingAssemblies, string.Join("\n    ", missingAssemblies)));
-            }
-
-            Func<MethodInfo, bool> filter = m => m.IsPublic && m.IsStatic && !m.IsSpecialName;
-
-            // For now, build the package's static command index.
-            var index = ConfigurationDictionary.Create(pkgAssemblies
-                .SelectMany(a => a.GetEntryPoints(filter)
-                                  .Select(mthd => new Tuple<string, string>(mthd.DeclaringType.FullName + "." + mthd.Name, a.Name))));
-
-            if (index.Count > 0)
-                index.Store(indexFilePath);
-        }
-
-        /// <summary>
         /// Index cmdlet commands in the given package.
         /// </summary>
         /// <param name="package">The package</param>
         /// <param name="resolver">The assembly resolver</param>
-        private static void BuildCmdletIndex(LocalPackage package, AssemblyResolver resolver)
+        private static void BuildCmdletIndex(LocalPackage package)
         {
             // We'll create one dictionary per verb, so that we can segment the index by verb at runtime,
             // leading to a quicker lookup process.
 
-            foreach (var asm in package.LoadCommandAssemblies())
+            foreach (var asm in package.CommandAssemblies)
             {
                 var types = FindCmdlets(package, asm);
             }
@@ -112,9 +78,9 @@ namespace Microsoft.CLU
         /// <param name="package">The package</param>
         /// <param name="resolver">The assembly resolver</param>
         /// <returns>The cmdlet types</returns>
-        public static IEnumerable<Type> FindCmdlets(LocalPackage package, PackageAssembly assembly)
+        public static IEnumerable<Type> FindCmdlets(LocalPackage package, Assembly assembly)
         {
-            var config = package.LoadConfig();
+            var config = package.Config;
 
             var nounFirst = config.NounFirst;
             var nounPrefix = config.NounPrefix;
@@ -131,7 +97,7 @@ namespace Microsoft.CLU
                 renamingRules = ConfigurationDictionary.Load(rulesPath);
             }
 
-            foreach (var type in assembly.Assembly.GetExportedTypes())
+            foreach (var type in assembly.GetExportedTypes())
             {
                 foreach (var attr in type.GetTypeInfo().GetCustomAttributes())
                 {
@@ -177,7 +143,7 @@ namespace Microsoft.CLU
                             else
                                 keys.Insert(0, verb);
 
-                            AddEntry(_index, keys, 0, $"{assembly.Name}{Constants.CmdletIndexItemValueSeparator}{type.FullName}");
+                            AddEntry(_index, keys, 0, $"{assembly.GetName().Name}{Constants.CmdletIndexItemValueSeparator}{type.FullName}");
                             if (!string.IsNullOrEmpty(origNoun))
                                 _nameMap.Add(string.Join(";", keys), $"{origVerb}-{origNoun}");
                             else

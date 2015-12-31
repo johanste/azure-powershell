@@ -1,4 +1,5 @@
-﻿namespace System.Management.Automation
+﻿#if false
+namespace System.Management.Automation
 {
     public class PSInvalidCastException : InvalidCastException, IContainsErrorRecord
     {
@@ -8,3 +9,4 @@
         public ErrorRecord ErrorRecord { get; }
     }
 }
+#endif

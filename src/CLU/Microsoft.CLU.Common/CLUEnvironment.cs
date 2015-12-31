@@ -296,7 +296,8 @@ namespace Microsoft.CLU
                 {
                     if (_directory == null)
                     {
-                        _directory = System.IO.Directory.CreateDirectory(Path.Combine(CLUEnvironment.GetRootPath(), "sessions", $"session_{ID}")).FullName;
+                        var rootPath = CLUEnvironment.GetRootPath() ?? AppContext.BaseDirectory;
+                        _directory = System.IO.Directory.CreateDirectory(Path.Combine(rootPath, "sessions", $"session_{ID}")).FullName;
                     }
 
                     return _directory;

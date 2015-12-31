@@ -47,46 +47,18 @@ namespace Microsoft.CLU.CommandBinder
         #endregion
 
         /// <summary>
-        /// Creates an instance of CmdletBinderAndCommand with an alreadly rsolved Cmdlet.
-        /// </summary>
-        /// <param name="commandConfiguration">The command configuration</param>
-        /// <param name="runtime">The runtime</param>
-        /// <param name="cmdletValue">The resolved Cmdlet</param>
-        public CmdletBinderAndCommand(ConfigurationDictionary commandConfiguration, ICommandRuntime runtime, CmdletValue cmdletValue)
-        {
-            Debug.Assert(commandConfiguration != null);
-            Debug.Assert(runtime != null);
-            Debug.Assert(cmdletValue != null);
-            Debug.Assert(cmdletValue.Package != null);
-            Debug.Assert(cmdletValue.LoadCmdlet() != null);
-
-            _runtime = runtime;
-            _commandConfiguration = commandConfiguration;
-            _staticParameterBindInProgress = true;
-            InitCmdlet(cmdletValue.LoadCmdlet(), cmdletValue.PackageAssembly.FullPath);
-            Action<Type, uint, string> discriminatorBindFinished = (Type cmdletType, uint seekBackOffset, string fullPath) =>
-            {
-                // NOP
-            };
-
-            _discriminatorBinder = new DiscriminatorBinder(_commandConfiguration.GetListValue(Constants.CmdletModulesConfigKey), discriminatorBindFinished, cmdletValue);
-        }
-
-        /// <summary>
         /// Creates an instance of CmdletBinderAndCommand.
         /// </summary>
         /// <param name="commandConfiguration">The command configuration</param>
         /// <param name="runtime">The runtime</param>
-        public CmdletBinderAndCommand(ConfigurationDictionary commandConfiguration, ICommandRuntime runtime)
+        public CmdletBinderAndCommand(string nounPrefix, CmdletLocalPackage package, ICommandRuntime runtime)
         {
-            Debug.Assert(commandConfiguration != null);
             Debug.Assert(runtime != null);
             _runtime = runtime;
-            _commandConfiguration = commandConfiguration;
             Action<Type, uint, string> discriminatorBindFinished = (Type cmdletType, uint seekBackOffset, string fullPath) =>
             {
                 _staticParameterBindInProgress = true;
-                InitCmdlet(cmdletType, fullPath);
+                InitCmdlet(cmdletType, nounPrefix, fullPath);
                 if (seekBackOffset > 0)
                 {
                     ParserSeekBackAndRun(seekBackOffset);
@@ -94,7 +66,7 @@ namespace Microsoft.CLU.CommandBinder
                 }
             };
 
-            _discriminatorBinder = new DiscriminatorBinder(_commandConfiguration.GetListValue(Constants.CmdletModulesConfigKey), discriminatorBindFinished);
+            _discriminatorBinder = new DiscriminatorBinder(discriminatorBindFinished, package);
         }
 
         #region ICommandBinder implementation
@@ -172,12 +144,16 @@ namespace Microsoft.CLU.CommandBinder
         /// <returns>A list of lines containing help information.</returns>
         public IEnumerable<string> GenerateCommandHelp(ICommandLineParser parser, string[] args, bool prefix)
         {
-            return CmdletHelp.Generate(parser.FormatParameterName, _discriminatorBinder.Modules, args, prefix);
+#if IMPLEMENT_HELP
+            return CmdletHelp.Generate(parser.FormatParameterName, args, prefix);
+#else
+            return new string[] { "HELP DISABLED" };
+#endif
         }
 
-        #endregion
+#endregion
 
-        #region ICommand implementation
+#region ICommand implementation
 
         /// <summary>
         /// Tells whether the command is synchronous or asynchronous.
@@ -256,7 +232,7 @@ namespace Microsoft.CLU.CommandBinder
             throw new InvalidOperationException(Strings.CmdletBinderAndCommand_InvokeAsync_CmdletNotSupportAsyncInvoke);
         }
 
-        #endregion
+#endregion
 
         public void MarkStaticParameterBindFinished()
         {
@@ -269,10 +245,8 @@ namespace Microsoft.CLU.CommandBinder
         /// This method throws InvalidCmdletException if the cmdlet is not invokable.
         /// </summary>
         /// <returns>The cmdlet instance</returns>
-        private Cmdlet CreateCmdlet(Type cmdletType, string assemblyLocation)
+        private Cmdlet CreateCmdlet(Type cmdletType, string nounPrefix, string assemblyLocation)
         {
-            var nounPrefix = _commandConfiguration.Get(Constants.CmdletNounPrefixConfigKey, false);
-
             var ctors = cmdletType.GetConstructors();
             if (ctors == null || ctors.Length == 0)
             {
@@ -303,10 +277,7 @@ namespace Microsoft.CLU.CommandBinder
                 psCmdlet.MyInvocation = new InvocationInfo()
                 {
                     MyCommand = CmdletInfo,
-                    InvocationName = CmdletInfo.Name,
-                    PipelineLength = 1,
-                    PipelinePosition = 1,
-                    CommandOrigin = CommandOrigin.Runspace
+                    InvocationName = CmdletInfo.Name
                 };
 
                 psCmdlet.SessionState = new SessionState();
@@ -320,9 +291,9 @@ namespace Microsoft.CLU.CommandBinder
         /// Load the Cmdlet instance, metadata and initialize static parameter binder.
         /// </summary>
         /// <param name="cmdletType">The cmdlet types</param>
-        private void InitCmdlet(Type cmdletType, string assemblyLocation)
+        private void InitCmdlet(Type cmdletType, string nounPrefix, string assemblyLocation)
         {
-            _cmdlet = CreateCmdlet(cmdletType,assemblyLocation);
+            _cmdlet = CreateCmdlet(cmdletType, nounPrefix, assemblyLocation);
             _cmdletMetadata = CmdletMetadata.Load(_cmdlet);
             _staticParametersBindState = new ParameterBindState(_cmdletMetadata.Type);
             _staticParametersBindHandler = new BindHandler(_cmdlet, _staticParametersBindState);
@@ -508,12 +479,12 @@ namespace Microsoft.CLU.CommandBinder
             return parameterSet == null || parameter.ParameterSets.ContainsKey(parameterSet);
         }
 
-        #region Private fields
+#region Private fields
 
-        /// <summary>
-        /// Configuration of the current command.
-        /// </summary>
-        private ConfigurationDictionary _commandConfiguration;
+        ///// <summary>
+        ///// Configuration of the current command.
+        ///// </summary>
+        //private ConfigurationDictionary _commandConfiguration;
 
         /// <summary>
         /// Ges access to console.
@@ -575,6 +546,6 @@ namespace Microsoft.CLU.CommandBinder
         /// </summary>
         private bool _positionalArgumentsBounded;
 
-        #endregion
+#endregion
     }
 }
