@@ -97,18 +97,6 @@ namespace Microsoft.CLU.Metadata
             Type = propertyInfo.PropertyType;
         }
 
-        /// <summary>
-        /// Gets the collection of property's child properties. When the property is complex type
-        /// (such as class) this method returns all serializable properties of the complex
-        /// type
-        /// </summary>
-        /// <returns></returns>
-        public IDictionary<string, Property> GetSerializableChildProperties()
-        {
-            var propertyInfos = Reflector.GetPropertyInfosWithPublicGetSet(Type);
-            return propertyInfos.ToDictionary(p => p.Name, p => new Property(p.Name, p));
-        }
-
         #region Private fields
 
         /// <summary>

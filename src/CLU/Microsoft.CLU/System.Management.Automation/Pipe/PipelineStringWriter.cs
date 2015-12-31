@@ -31,17 +31,6 @@ namespace System.Management.Automation.Runspaces
         }
 
         /// <summary>
-        /// The max capacity of the pipe.
-        /// </summary>
-        public override int MaxCapacity
-        {
-            get
-            {
-                return _pipe.MaxCapacity;
-            }
-        }
-
-        /// <summary>
         /// Creates an instance of PipelineStringWriter
         /// </summary>
         /// <param name="pipe">The pipe</param>
@@ -78,14 +67,6 @@ namespace System.Management.Automation.Runspaces
         public override void Flush()
         {
             _pipe.Flush();
-        }
-
-        /// <summary>
-        /// Closes the write end.
-        /// </summary>
-        public override void Close()
-        {
-            _pipe.WriteClose();
         }
 
         /// <summary>

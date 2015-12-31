@@ -17,7 +17,7 @@ namespace Microsoft.CLU.CommandModel
         /// <summary>
         /// Runs the Cmdlet programming model given it's configuration.
         /// </summary>
-        /// <param name="commandConfiguration">Date from the command configuration file.</param>
+        /// <param name="commandConfiguration">Data from the command configuration file.</param>
         /// <param name="arguments">The command-line arguments array</param>
         public CommandModelErrorCode Run(string nounPrefix, ICommandLineParser commandParser, CmdletLocalPackage package, string[] arguments)
         {
@@ -64,15 +64,7 @@ namespace Microsoft.CLU.CommandModel
 
                 try
                 {
-                    if (binderAndCommand.IsAsync)
-                    {
-                        binderAndCommand.InvokeAsync().Wait();
-
-                    }
-                    else
-                    {
                         binderAndCommand.Invoke();
-                    }
 
                     if (runtimeHost.TerminatingErrorReported)
                     {

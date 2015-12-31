@@ -15,7 +15,6 @@ namespace System.Management.Automation.Host
         public abstract void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value);
         public abstract void WriteDebugLine(string message);
         public abstract void WriteErrorLine(string value);
-        public virtual void WriteLine() { }
         public abstract void WriteLine(string value);
         public virtual void WriteLine(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value) { }
         public abstract void WriteProgress(long sourceId, ProgressRecord record);

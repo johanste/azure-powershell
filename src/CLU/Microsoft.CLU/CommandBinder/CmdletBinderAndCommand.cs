@@ -151,21 +151,9 @@ namespace Microsoft.CLU.CommandBinder
 #endif
         }
 
-#endregion
+        #endregion
 
-#region ICommand implementation
-
-        /// <summary>
-        /// Tells whether the command is synchronous or asynchronous.
-        /// </summary>
-        public bool IsAsync
-        {
-            get
-            {
-                // The Cmdlet programming model is synchronous.
-                return false;
-            }
-        }
+        #region ICommand implementation
 
         public bool SupportsAutomaticHelp
         {
@@ -224,15 +212,7 @@ namespace Microsoft.CLU.CommandBinder
             }
         }
 
-        /// <summary>
-        /// Invokes an asynchronous command.
-        /// </summary>
-        public Task InvokeAsync()
-        {
-            throw new InvalidOperationException(Strings.CmdletBinderAndCommand_InvokeAsync_CmdletNotSupportAsyncInvoke);
-        }
-
-#endregion
+        #endregion
 
         public void MarkStaticParameterBindFinished()
         {
@@ -479,7 +459,7 @@ namespace Microsoft.CLU.CommandBinder
             return parameterSet == null || parameter.ParameterSets.ContainsKey(parameterSet);
         }
 
-#region Private fields
+        #region Private fields
 
         ///// <summary>
         ///// Configuration of the current command.
@@ -546,6 +526,6 @@ namespace Microsoft.CLU.CommandBinder
         /// </summary>
         private bool _positionalArgumentsBounded;
 
-#endregion
+        #endregion
     }
 }

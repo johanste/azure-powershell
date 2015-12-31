@@ -78,43 +78,11 @@ namespace System.Management.Automation.Host
         /// <remarks>If this is true, your code is not doing console I/O</remarks>
         public override bool IsOutputRedirected { get { return _hostStreamInfo.IsOutputRedirected; } }
 
-        public override CultureInfo CurrentCulture
-        {
-            get
-            {
-                return CultureInfo.CurrentCulture;
-            }
-        }
-
-        public override CultureInfo CurrentUICulture
-        {
-            get
-            {
-                return CultureInfo.CurrentUICulture;
-            }
-        }
-
         public PSHost Host
         {
             get
             {
                 return this;
-            }
-        }
-
-        /// <summary>
-        /// Private field backing InstanceId property.
-        /// </summary>
-        private Guid _id = Guid.NewGuid();
-
-        /// <summary>
-        /// The host instance ID.
-        /// </summary>
-        public override Guid InstanceId
-        {
-            get
-            {
-                return _id;
             }
         }
 
@@ -416,8 +384,8 @@ namespace System.Management.Automation.Host
         {
             if (!IsOutputRedirected)
             {
-                _ui.WriteProgress(0, progressRecord);
-            }
+            _ui.WriteProgress(0, progressRecord);
+        }
         }
 
         /// <summary>
@@ -430,8 +398,8 @@ namespace System.Management.Automation.Host
         {
             if (!IsOutputRedirected)
             {
-                _ui.WriteProgress(sourceId, progressRecord);
-            }
+            _ui.WriteProgress(sourceId, progressRecord);
+        }
         }
 
         /// <summary>
@@ -589,7 +557,6 @@ namespace System.Management.Automation.Host
                 return new PSCredential(id, ReadLine('*'));
             }
 
-
             /// <summary>
             /// Read a line from STDIN.
             /// </summary>
@@ -675,8 +642,8 @@ namespace System.Management.Automation.Host
             {
                 if (!_host.IsOutputRedirected)
                 {
-                    _dataStream.WriteProgress(sourceId, record);
-                }
+                _dataStream.WriteProgress(sourceId, record);
+            }
             }
 
             /// <summary>

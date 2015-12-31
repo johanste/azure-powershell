@@ -24,11 +24,6 @@ namespace System.Management.Automation.Runspaces
         bool EndOfPipeline { get; }
 
         /// <summary>
-        /// The maximum capacity of the pipe.
-        /// </summary>
-        int MaxCapacity { get; }
-
-        /// <summary>
         /// Indicates whether the pipe is open.
         /// </summary>
         bool IsOpen { get; }

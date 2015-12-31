@@ -226,27 +226,6 @@ namespace Microsoft.Azure.Commands.Common.Test.Mocks
         {
             PSHostUserInterface _hostUI = new MockPSHostUI();
             Version _version = new Version(1, 0, 0);
-            Guid _instanceId = Guid.NewGuid();
-            public override CultureInfo CurrentCulture
-            {
-                get { return CultureInfo.CurrentCulture; }
-            }
-
-            public override CultureInfo CurrentUICulture
-            {
-                get
-                {
-                    return CultureInfo.CurrentUICulture;
-                }
-            }
-
-            public override Guid InstanceId
-            {
-                get
-                {
-                    return _instanceId;
-                }
-            }
 
             public override bool IsInputRedirected
             {

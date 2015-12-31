@@ -106,17 +106,6 @@ namespace Microsoft.CLU.Metadata
             Position = ParameterInfo.Position;
         }
 
-        /// <summary>
-        /// Gets the collection of parameter properties. When the parameter is complex type
-        /// (such as class) this method returns all serializable properties of the complex
-        /// type
-        /// </summary>
-        /// <returns></returns>
-        public IDictionary<string, Property> GetSerializableChildProperties()
-        {
-            var propertyInfos = Reflector.GetPropertyInfosWithPublicGetSet(Type);
-            return propertyInfos.ToDictionary(p => p.Name, p=> new Property(p.Name, p));
-        }
 
         #region Private fields
 
