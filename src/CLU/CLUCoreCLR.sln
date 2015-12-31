@@ -57,6 +57,13 @@ Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.Azure.Commands.Co
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.CLU.CommandPackage", "Microsoft.CLU.CommandPackage\Microsoft.CLU.CommandPackage.xproj", "{A367B5B1-74FD-4F31-B317-138527DAABEE}"
 EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "VhdManagement", "VhdManagement\VhdManagement.xproj", "{094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Sync", "Sync\Sync.xproj", "{6EDCB32A-8420-48FC-99CE-94BEA12D2FD2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9} = {094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9}
+	EndProjectSection
+EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.ScenarioTest.CLU", "Microsoft.ScenarioTest.CLU\Microsoft.ScenarioTest.CLU.xproj", "{91422B55-28A5-48DE-BCA0-30C3E30FFB1C}"
 EndProject
 Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "az", "az\az.xproj", "{D14C7C55-E9C5-40A3-A233-0ABA880E9D22}"
@@ -155,6 +162,14 @@ Global
 		{91422B55-28A5-48DE-BCA0-30C3E30FFB1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91422B55-28A5-48DE-BCA0-30C3E30FFB1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91422B55-28A5-48DE-BCA0-30C3E30FFB1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{094A32EA-BABC-4A0C-9B6C-3CF7F6EABEC9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6EDCB32A-8420-48FC-99CE-94BEA12D2FD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6EDCB32A-8420-48FC-99CE-94BEA12D2FD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6EDCB32A-8420-48FC-99CE-94BEA12D2FD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6EDCB32A-8420-48FC-99CE-94BEA12D2FD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D14C7C55-E9C5-40A3-A233-0ABA880E9D22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D14C7C55-E9C5-40A3-A233-0ABA880E9D22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D14C7C55-E9C5-40A3-A233-0ABA880E9D22}.Release|Any CPU.ActiveCfg = Release|Any CPU
