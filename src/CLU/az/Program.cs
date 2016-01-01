@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 using Microsoft.Framework.Runtime.Common.CommandLine;
 
@@ -10,65 +12,120 @@ namespace Azure
     /// </summary>
     public class Program
     {
-        /// <summary>
-        /// Microsoft.CLU.Run (clurun.exe) main entry point.
-        /// </summary>
-        /// <param name="args">The commandline arguments</param>
         public static int Main(string[] args)
         {
             Console.ReadLine();
-            var app = new CommandLineApplication();
 
-            var install = app.Command("install", (cmd) => { }, false, false);
-            var update = app.Command("update", (cmd) => { }, false);
-            var remove = app.Command("remove", (cmd) => { }, false);
 
-            update.OnExecute(() =>
+            var tc = System.Environment.TickCount;
+            string pkgRoot = @"C:\repos\azure-ps-bugfix\azure-powershell\drop\clurun\win7-x64\pkgs";
+            
+            //foreach (var cmd in FindCommands(pkgRoot, args))
+            //{
+            //    Console.WriteLine($"Match: {cmd}");
+            //}
+
+
+            //foreach (var cmd in CompleteCommands(pkgRoot, args))
+            //{
+            //    Console.WriteLine($"Completion: {cmd}");
+            //}
+
+            var hashSet = new HashSet<string>();
+            foreach (var cmd in CompleteCommands(pkgRoot, args))
             {
-                Console.WriteLine("Update executing...");
-                return 47;
-            });
+                var splitCmd = cmd.Split(';');
 
-            install.OnExecute(() =>
-            {
-                Console.WriteLine("Install executing...");
-                return Install(args);
-            });
+                System.Diagnostics.Debug.Assert(splitCmd.Length >= args.Length);
 
-            remove.OnExecute(() =>
-            {
-                Console.WriteLine("Remove executing...");
-                return 1765;
-            });
-
-
-
-            app.OnExecute(() =>
-            {
-                Console.WriteLine("Dispatch executing...");
-                return 0;
-            });
-
-            try
-            {
-                int i = app.Execute(args);
-                Console.WriteLine(i);
-                return i;
+                var nextWord = args.Length == 0 || String.Equals(args[args.Length - 1], splitCmd[args.Length - 1]) ? splitCmd[args.Length] : splitCmd[args.Length - 1];
+                hashSet.Add(nextWord);
             }
-            catch (Exception)
+            Console.WriteLine($"Next word: {String.Join(" ", hashSet)}");
+
+            Console.WriteLine($"All this took {Environment.TickCount - tc}ms...");
+            return 0;
+        }
+
+        public static IEnumerable<string> FindCommands(string pkgRoot, string[] args)
+        {
+            var semiColonSeparatedArgs = String.Join(";", args) + ";";
+
+            Func<string, bool> matcher = (cmd) =>
             {
-                throw;
+                return Program.MatchScore(cmd, semiColonSeparatedArgs) >= cmd.Length;
+            };
+
+            return FindMatches(pkgRoot, args, matcher);
+        }
+
+        public static IEnumerable<string> CompleteCommands(string pkgRoot, string[] args)
+        {
+            var semiColonSeparatedArgs = String.Join(";", args);
+
+            Func<string, bool> matcher = (cmd) =>
+            {
+                return Program.MatchScore(cmd, semiColonSeparatedArgs) >= semiColonSeparatedArgs.Length;
+            };
+
+            return FindMatches(pkgRoot, args, matcher);
+        }
+
+        public static IEnumerable<string> FindMatches(string pkgRoot, string[] args, Func<string, bool> matchFunc)
+        {
+            foreach (var commandIndex in GetCommandIndexes(pkgRoot).SelectMany((s) => { return s; }))
+            {
+                var semiColonSeparatedCommand = commandIndex.Split(':')[0] + ";";
+                if (matchFunc(semiColonSeparatedCommand))
+                {
+                    yield return semiColonSeparatedCommand;
+                }
             }
         }
 
-        public static int Install(IEnumerable<string> args)
+
+        public static IEnumerable<string[]> GetCommandIndexes(string pkgsRootPath)
         {
-            foreach (var pkg in args)
+            foreach (var location in GetIndexLocations(pkgsRootPath))
             {
-                Console.WriteLine($"Should have installed package {pkg}");
+                yield return System.IO.File.ReadAllLines(location);
+            }
+        }
+
+        public static IEnumerable<string> GetIndexLocations(string pkgsRootPath)
+        {
+            var rootInfo = new System.IO.DirectoryInfo(pkgsRootPath);
+
+            foreach (var pkgPath in rootInfo.EnumerateDirectories())
+            {
+                foreach (var versionPath in pkgPath.EnumerateDirectories())
+                {
+                    var cmdletIndexPath = Path.Combine(versionPath.FullName, "_indexes", "_cmdlets.idx");
+                    if (File.Exists(cmdletIndexPath))
+                    {
+                        yield return cmdletIndexPath;
+                    }
+                }
             }
 
-            return 0;
+        }
+
+        public static int MatchScore(string semiColonSeparatedArgs, string semiColonSeparatedCommand)
+        {
+            int score = 0;
+            for (int charPos = 0; charPos < Math.Min(semiColonSeparatedArgs.Length, semiColonSeparatedCommand.Length); ++charPos)
+            {
+                if (semiColonSeparatedArgs[charPos] != semiColonSeparatedCommand[charPos])
+                {
+                    break;
+                }
+                else
+                {
+                    score = charPos + 1;
+                }
+            }
+
+            return score;
         }
     }
 }
