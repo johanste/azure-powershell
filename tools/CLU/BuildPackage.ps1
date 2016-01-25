@@ -1,4 +1,4 @@
-﻿param([string]$cmdletsDir, [string]$packageId, [string]$packageSource, [string]$packageVersion, [string]$outputDir)
+﻿param([string]$cmdletsDir, [string]$packageId, [string]$packageSource, [string]$packageVersion, [string]$outputDir, [string]$runtimeType)
 
 if (!(Test-Path $cmdletsDir))
 {
@@ -16,7 +16,10 @@ if ([string]::IsNullOrWhiteSpace($env:WORKSPACE) -or !(Test-Path $env:WORKSPACE)
 
 $packageSource = $packageSource.TrimEnd('\\')
 Write-Host "using package id: $packageId, package source: $packageSource, packageVersion: $packageVersion"
-dotnet publish $cmdletsDir -f dnxcore50 -r win7-x64 -o $packageSource
+dotnet publish $cmdletsDir -r $runtimeType
+#dotnet publish $cmdletsDir -r win7-x64 
+#dotnet publish $cmdletsDir -r osx.10.10-x64
+#dotnet publish $cmdletsDir -r ubuntu.14.04-x64 
 Copy-Item -Path $cmdletsDir\content -Destination $packageSource\content -Recurse -Force
 Copy-Item -Path $cmdletsDir\*xml -Destination $packageSource\content -Force
 

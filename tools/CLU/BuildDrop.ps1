@@ -24,6 +24,21 @@ if (!(Test-Path -Path "$dropLocation\CommandRepo" -PathType Container))
     mkdir "$dropLocation\CommandRepo"
 }
 
+if (!(Test-Path -Path "$dropLocation\CommandRepo\win7-x64" -PathType Container))
+{
+    mkdir "$dropLocation\CommandRepo\win7-x64"
+}
+
+if (!(Test-Path -Path "$dropLocation\CommandRepo\osx.10.10-x64" -PathType Container))
+{
+    mkdir "$dropLocation\CommandRepo\osx.10.10-x64"
+}
+
+if (!(Test-Path -Path "$dropLocation\CommandRepo\ubuntu.14.04-x64" -PathType Container))
+{
+    mkdir "$dropLocation\CommandRepo\ubuntu.14.04-x64"
+}
+
 if (!(Test-Path -Path "$dropLocation\clurun" -PathType Container))
 {
     mkdir "$dropLocation\clurun"
@@ -46,7 +61,9 @@ foreach($commandPackage in $commandPackages)
     $commandPackageDir  = $commandPackage.Directory
     $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"
 
-    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo"
+    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo\win7-x64 win7-x64"
+    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo\osx.10.10-x64 osx.10.10-x64"
+    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo\ubuntu.14.04-x64 ubuntu.14.04-x64"
 }
 
 if (!($excludeCluRun))
@@ -62,12 +79,12 @@ if (!($excludeCluRun))
             Copy-Item -Path "$workspaceDirectory\tools\CLU\$runtime\coreconsole" -Destination "$cluRunOutput\clurun" -Force
 
             # Remove all extra exes that end up in the output directory...
-            Get-ChildItem -Path "$cluRunOutput" -Filter "*.exe" | Remove-Item
+            #Get-ChildItem -Path "$cluRunOutput" -Filter "*.exe" | Remove-Item
         }
         else 
         {
             # Remove all extra exes that end up in the output directory...
-            Get-Childitem -path "$cluRunOutput" -Filter *.exe | Where-Object -Property "Name" -Value "clurun.exe" -NotMatch | Remove-Item
+            #Get-Childitem -path "$cluRunOutput" -Filter *.exe | Where-Object -Property "Name" -Value "clurun.exe" -NotMatch | Remove-Item
         }
     }
 }
