@@ -54,17 +54,6 @@ namespace System.Management.Automation.Runspaces
         }
 
         /// <summary>
-        /// The max capacity.
-        /// </summary>
-        public override int MaxCapacity
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        /// <summary>
         /// Read next string from the file.
         /// </summary>
         /// <returns>The next string item in the file</returns>

@@ -12,13 +12,23 @@
 // limitations under the License.
 // ----------------------------------------------------------------------------------
 
+using System;
+using System.Reflection;
+
 namespace Microsoft.Azure.Commands.Compute
 {
     public class EntryStub
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            // empty entry point
+            var baseDirectory = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
+            var config = new Microsoft.CLU.Common.PackageConfig(
+                "Microsoft.Azure.Commands.Compute",
+                new System.Reflection.Assembly[] { typeof(EntryStub).GetTypeInfo().Assembly },
+                "AzureRm");
+
+            return Microsoft.CLU.CommandPackage.CommandPackage.Handle(config, baseDirectory.Parent.Parent, args);
         }
     }
 }
+

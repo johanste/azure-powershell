@@ -9,18 +9,9 @@ namespace Microsoft.CLU
     public interface ICommand
     {
         /// <summary>
-        /// Tells whether the command is synchronous or asynchronous.
-        /// </summary>
-        bool IsAsync { get; }
-
-        /// <summary>
         /// Invokes a synchronous command.
         /// </summary>
         void Invoke();
 
-        /// <summary>
-        /// Invokes an asynchronous command.
-        /// </summary>
-        Task InvokeAsync();
     }
 }

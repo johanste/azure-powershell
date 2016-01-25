@@ -34,11 +34,6 @@ namespace Microsoft.CLU.CommandBinder
             {
                 ReadFromStdinPipelineParameters.Add(pipelineParameters.First().Name);
             }
-
-            if (File.Exists(Path.Combine(CLUEnvironment.GetRootPath(), "_defaults.json")))
-            {
-                ReadFromPositionalFilesValues.Add("_defaults.json");
-            }
         }
 
         /// <summary>

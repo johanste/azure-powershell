@@ -130,16 +130,6 @@ namespace Microsoft.CLU
         }
 
         /// <summary>
-        /// Checks the type represents a collection (including array)
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static bool IsCollection(this Type type)
-        {
-            return typeof(IEnumerable<>).IsAssignableFrom(type);
-        }
-
-        /// <summary>
         /// Checks the type is an array type with a specific element type.
         /// </summary>
         /// <param name="type"></param>
@@ -150,27 +140,5 @@ namespace Microsoft.CLU
             return type.IsArray && (type.GetElementType() == elementType);
         }
 
-        /// <summary>
-        /// Checks the given type has default constructor
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static bool hasDefaultConstructor(this Type type)
-        {
-            var constructor = type.GetConstructor(Type.EmptyTypes);
-            return constructor != null;
-        }
-
-        /// <summary>
-        /// Checks whether a type has a constructor taking a single argument of a specific type.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <param name="parameterType"></param>
-        /// <returns></returns>
-        public static bool hasConstructorWithSingleParameterOfType(this Type type, Type parameterType)
-        {
-            var constructor = type.GetConstructor(new Type[] { parameterType });
-            return constructor != null;
-        }
     }
 }

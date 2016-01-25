@@ -17,8 +17,6 @@ namespace System.Management.Automation
 
         internal protected bool Stopping { get; private set; }
 
-        protected virtual string GetResourceString(string baseName, string resourceId) { return null; }
-
         protected bool ShouldContinue(string query, string caption)
         {
             return CommandRuntime.ShouldContinue(query, caption);

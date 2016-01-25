@@ -537,17 +537,7 @@ namespace Microsoft.CLU.Common.Properties {
                 return ResourceManager.GetString("ErrorLineFormat", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Could not find any of the following required assemblies:
-        /// {0}.
-        /// </summary>
-        internal static string IndexBuilder_BuildStaticCommandIndex_MissingAssemblies {
-            get {
-                return ResourceManager.GetString("IndexBuilder_BuildStaticCommandIndex_MissingAssemblies", resourceCulture);
-            }
-        }
-        
+                
         /// <summary>
         ///   Looks up a localized string similar to Invalid verb rename: &apos;{0}&apos; -&gt; &apos;{1}&apos;. Indexing aborted.
         ///Please report this error to the provider of the &apos;{2}&apos; package.

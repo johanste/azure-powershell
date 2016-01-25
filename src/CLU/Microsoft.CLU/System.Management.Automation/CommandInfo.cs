@@ -5,7 +5,6 @@ namespace System.Management.Automation
 {
     public abstract class CommandInfo
     {
-        public CommandTypes CommandType { get { return CommandTypes.Cmdlet; } }
         public string Name { get; protected set; }
         public abstract ReadOnlyCollection<PSTypeName> OutputType { get;  }
         public virtual Dictionary<string, ParameterMetadata> Parameters { get; }

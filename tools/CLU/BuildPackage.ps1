@@ -25,7 +25,6 @@ $nuSpecOutput = [System.IO.Path]::Combine($packageSource, ($packageId + ".nuspec
 Write-Host "Creating dynamic nuspec package in: $nuSpecOutput"
 
 $fileContent = Get-Content $nuSpecTemplate
-$renameFileExists = Test-Path -Path ([System.IO.Path]::Combine($packageSource, "content", "rename.cfg"))
 $files = (Get-ChildItem $packageSource | Where -FilterScript {!$_.Name.Contains("nuspec")} | Select-Object -Property Name)
 $refFiles = $files | Where -FilterScript { $_.Name.EndsWith(".dll")}
 $refFileText = ""
@@ -33,18 +32,12 @@ $refFiles | %{$refFileText +=  ("        <reference file=""" + $_.Name + """/>`r
 $contentFileText = ""
 if ($packageId -ne "Microsoft.CLU.Commands") 
 {
-    $contentFileText += "    <file src=""content\*.lx"" target=""content""/>`r`n"
     $contentFileText += "    <file src=""content\*xml"" target=""content""/>`r`n"
     if (Test-Path "$packageSource\content\help") 
     {
         $contentFileText += "    <file src=""content\help\*.hlp"" target=""content\help""/>`r`n"
     }
 }
-if ($renameFileExists)
-{
-    $contentFileText += "    <file src=""content\rename.cfg"" target=""content""/>`r`n"
-}
-$contentFileText += "    <file src=""content\package.cfg"" target=""content""/>`r`n"
 $sourceFileText = ""
 $refFiles | %{$sourceFileText += ("    <file src=""" + $_.Name + """ target=""lib\dnxcore50""/>`r`n")}
 $outputContent = $fileContent -replace "%PackageVersion%", $packageVersion 

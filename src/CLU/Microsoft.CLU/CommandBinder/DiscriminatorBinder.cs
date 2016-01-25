@@ -91,19 +91,12 @@ namespace Microsoft.CLU.CommandBinder
     ///
     /// </summary>
     internal class DiscriminatorBinder
-    {
-        /// <summary>
-        /// The modules (packages) that DiscriminatorBinder search for Cmdlet resolution.
-        /// </summary>
-        public IEnumerable<string> Modules
-        {
-            get { return _modules; }
-        }
+    { 
 
         /// <summary>
         /// The LocalPackage instance containing the resolved Cmdlet.
         /// </summary>
-        public LocalPackage Package
+        public CmdletLocalPackage Package
         {
             get; private set;
         }
@@ -121,31 +114,12 @@ namespace Microsoft.CLU.CommandBinder
         /// </summary>
         /// <param name="modules">The modules to look for the cmdlet</param>
         /// <param name="bindFinishedCallback">Callback to invoke once the binding is finished</param>
-        public DiscriminatorBinder(IEnumerable<string> modules, Action<Type, uint, string> bindFinishedCallback)
+        public DiscriminatorBinder(Action<Type, uint, string> bindFinishedCallback, CmdletLocalPackage package)
         {
             Debug.Assert(bindFinishedCallback != null);
-            _modules = modules;
+            this.Package = package;
             _inProgress = true;
             _bindFinished = bindFinishedCallback;
-        }
-
-        /// <summary>
-        /// Creates an instance of DiscriminatorBinder which is in resolved state.
-        /// </summary>
-        /// <param name="modules">The modules to look for the cmdlet</param>
-        /// <param name="bindFinishedCallback">Callback to invoke when caller calls EnsureBound method</param>
-        /// <param name="cmdletValue">The resolved Cmdlet</param>
-        public DiscriminatorBinder(IEnumerable<string> modules, Action<Type, uint, string> bindFinishedCallback, CmdletValue cmdletValue) : this(modules, bindFinishedCallback)
-        {
-            Debug.Assert(cmdletValue != null);
-            Debug.Assert(cmdletValue.Package != null);
-            Debug.Assert(cmdletValue.LoadCmdlet() != null);
-
-            _offset = 0;
-            _cmdletValue = cmdletValue;
-            _commandDiscriminators = cmdletValue.CommandDiscriminators.ToList<string>();
-            _inProgress = false;
-            Package = cmdletValue.Package;
         }
 
         /// <summary>
@@ -176,12 +150,11 @@ namespace Microsoft.CLU.CommandBinder
             }
 
             _commandDiscriminators.Add(value);
-            var cmdletValue = CmdletLocalPackage.FindCmdlet(_modules, _commandDiscriminators);
+            var cmdletValue = Package.FindCmdlet(_commandDiscriminators);
             if (cmdletValue != null)
             {
                 _offset = 0;
                 _cmdletValue = cmdletValue;
-                Package = cmdletValue.Package;
             }
             else
             {
@@ -218,7 +191,7 @@ namespace Microsoft.CLU.CommandBinder
             _bindFinished(cmdLetType, _offset, System.IO.Path.Combine(_cmdletValue.Package.FullName, cmdLetType.GetTypeInfo().Assembly.GetName().Name + ".dll"));
         }
 
-        #region Private fields
+#region Private fields
 
         /// <summary>
         /// Callback to invoke once the binding is finished.
@@ -241,12 +214,6 @@ namespace Microsoft.CLU.CommandBinder
         private CmdletValue _cmdletValue;
 
         /// <summary>
-        /// The packages (modules) to look for cmdlet.
-        /// Backing field for Modules property.
-        /// </summary>
-        private IEnumerable<string> _modules;
-
-        /// <summary>
         /// The current command discriminators.
         /// </summary>
         private List<string> _commandDiscriminators = new List<string>();
@@ -256,6 +223,6 @@ namespace Microsoft.CLU.CommandBinder
         /// </summary>
         private uint _offset = 0;
 
-        #endregion
+#endregion
     }
 }

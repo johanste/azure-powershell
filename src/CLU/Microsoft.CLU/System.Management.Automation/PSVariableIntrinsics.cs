@@ -23,11 +23,6 @@ namespace System.Management.Automation
             return null;
         }
 
-        public object GetValue(string name)
-        {
-            throw new System.NotImplementedException("Can't get arbitrary types to load. Use Get<T>() instead.");
-        }
-
         public object GetValue(string name, object defaultValue)
         {
             if (_variables.ContainsKey(name))

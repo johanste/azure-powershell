@@ -20,14 +20,13 @@ namespace Microsoft.CLU
         /// </summary>
         /// <param name="package">The package</param>
         /// <param name="resolver">The assembly resolver</param>
-        internal static void CreateIndexes(LocalPackage package, AssemblyResolver resolver)
+        internal static void CreateIndexes(LocalPackage package)
         {
             Debug.Assert(package != null);
-            Debug.Assert(resolver != null);
             var indexFolderPath = GetIndexDirectoryPath(package);
             if (!Directory.Exists(indexFolderPath))
                 Directory.CreateDirectory(indexFolderPath);
-            BuildCmdletIndex(package, resolver);
+            BuildCmdletIndex(package);
         }
 
         /// <summary>
@@ -55,21 +54,18 @@ namespace Microsoft.CLU
         /// </summary>
         /// <param name="package">The package</param>
         /// <param name="resolver">The assembly resolver</param>
-        private static void BuildCmdletIndex(LocalPackage package, AssemblyResolver resolver)
+        private static void BuildCmdletIndex(LocalPackage package)
         {
             // We'll create one dictionary per verb, so that we can segment the index by verb at runtime,
             // leading to a quicker lookup process.
 
-            foreach (var asm in package.LoadCommandAssemblies())
+            foreach (var asm in package.CommandAssemblies)
             {
                 var types = FindCmdlets(package, asm);
             }
 
             _index.Save(Path.Combine(package.FullPath, Constants.IndexFolder));
 
-#if PSCMDLET_HELP
-            _nameMap.Store(Path.Combine(package.FullPath, Constants.IndexFolder, Constants.NameMappingFileName));
-#endif
             _index.Clear();
         }
 
@@ -79,9 +75,9 @@ namespace Microsoft.CLU
         /// <param name="package">The package</param>
         /// <param name="resolver">The assembly resolver</param>
         /// <returns>The cmdlet types</returns>
-        public static IEnumerable<Type> FindCmdlets(LocalPackage package, PackageAssembly assembly)
+        public static IEnumerable<Type> FindCmdlets(LocalPackage package, Assembly assembly)
         {
-            var config = package.LoadConfig();
+            var config = package.Config;
 
             var nounFirst = config.NounFirst;
             var nounPrefix = config.NounPrefix;
@@ -98,7 +94,7 @@ namespace Microsoft.CLU
                 renamingRules = ConfigurationDictionary.Load(rulesPath);
             }
 
-            foreach (var type in assembly.Assembly.GetExportedTypes())
+            foreach (var type in assembly.GetExportedTypes())
             {
                 var aliasEntryAdded = false;
                 {
@@ -109,7 +105,7 @@ namespace Microsoft.CLU
                     {
                         var attrType = cmdletAliasAttribute.GetType();
                         var keys = ((string)attrType.GetProperty("CommandName").GetValue(cmdletAliasAttribute)).Split(' ').ToList();
-                        AddEntry(_index, keys, $"{assembly.Name}{Constants.CmdletIndexItemValueSeparator}{type.FullName}");
+                        AddEntry(_index, keys, $"{assembly.GetName().Name}{Constants.CmdletIndexItemValueSeparator}{type.FullName}");
                         aliasEntryAdded = true;
                     }
                 }
@@ -162,19 +158,12 @@ namespace Microsoft.CLU
                                 else
                                     keys.Insert(0, verb);
 
-                                AddEntry(_index, keys, $"{assembly.Name}{Constants.CmdletIndexItemValueSeparator}{type.FullName}");
-#if PSCMDLET_HELP
-                            if (!string.IsNullOrEmpty(origNoun))
-                                _nameMap.Add(string.Join(";", keys), $"{origVerb}-{origNoun}");
-                            else
-                                _nameMap.Add(string.Join(";", keys), $"{origVerb}");
-#endif
+                                AddEntry(_index, keys, $"{assembly.GetName().Name}{Constants.CmdletIndexItemValueSeparator}{type.FullName}");
                             }
                         }
                     }
                 }
             }
-
             return result;
         }
 
@@ -198,7 +187,7 @@ namespace Microsoft.CLU
 
             foreach (var entry in renamingRules)
             {
-                var idx = noun.IndexOf(entry.Key, StringComparison.OrdinalIgnoreCase);
+                var idx = noun.IndexOf(entry.Key, StringComparison.OrdinalIgnoreCase); 
                 if (idx > -1)
                 {
                     var len = entry.Key.Length;
@@ -245,21 +234,13 @@ namespace Microsoft.CLU
             root.Entries.Add(string.Join(Constants.CmdletIndexWordSeparator, keys), value);
         }
 
-        #region Private fields
+#region Private fields
 
         /// <summary>
         /// All indicies of commands exposed in a given package.
         /// </summary>
         private static CmdletIndex _index = new CmdletIndex();
 
-#if PSCMDLET_HELP
-        /// <summary>
-        /// At installation time, we build a mapping from the CLI name, a sequence of keys, to
-        /// the official PS name, Verb-Noun. This is necessary in order to identify the help
-        /// content for a command.
-        /// </summary>
-        private static ConfigurationDictionary _nameMap = new ConfigurationDictionary();
-#endif
-        #endregion
+#endregion
     }
 }

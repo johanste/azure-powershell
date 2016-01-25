@@ -15,7 +15,7 @@ namespace Microsoft.CLU.Common
         /// </summary>
         /// <param name="packageBaseName">The base name of the package, i.e. the name without version number</param>
         /// <param name="packageDirInfo">DirectoryInfo of this package</param>
-        internal CmdletLocalPackage(string packageBaseName, DirectoryInfo packageDirInfo) : base(packageBaseName, packageDirInfo)
+        internal CmdletLocalPackage(PackageConfig config, DirectoryInfo packageDirInfo) : base(config, packageDirInfo)
         { }
 
         /// <summary>
@@ -57,36 +57,6 @@ namespace Microsoft.CLU.Common
             Debug.Assert(commandDiscriminators != null);
             var directorySeparator = new string(Path.DirectorySeparatorChar, 1);
             return LoadFromCache().Entries;
-        }
-
-        /// <summary>
-        /// Find the Cmdlet corrosponding to the given command discriminators from a package list.
-        /// e.g. Suppose the command discriminators are [ 'vm', 'image', 'list'], if one of the given
-        /// package in the pacakgeNames contains Cmdlet (AzureVMImageList) for the command
-        /// "vm image list" then this method returns a CmdletValue instance representing
-        /// AzureVMImageList cmdlet.
-        /// </summary>
-        /// <param name="packageNames">The package names</param>
-        /// <param name="commandDiscriminators">The command discriminators</param>
-        /// <returns>CmdletValue instance representing Cmdlet for the given command discriminators</returns>
-        public static CmdletValue FindCmdlet(IEnumerable<string> packageNames, IEnumerable<string> commandDiscriminators)
-        {
-            Debug.Assert(packageNames != null);
-            Debug.Assert(commandDiscriminators != null);
-            foreach (var packageName in packageNames)
-            {
-                CmdletLocalPackage package = LoadCmdletPackage(packageName);
-                if (package != null)
-                {
-                    var cmdletIndexValue = package.FindCmdlet(commandDiscriminators);
-                    if (cmdletIndexValue != null)
-                    {
-                        return cmdletIndexValue;
-                    }
-                }
-            }
-
-            return null;
         }
 
         /// <summary>

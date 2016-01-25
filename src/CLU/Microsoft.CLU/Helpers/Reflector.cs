@@ -82,14 +82,5 @@ namespace Microsoft.CLU.Helpers
             return methodInfo.GetParameters();
         }
 
-        /// <summary>
-        /// Gets method paramters as Parameter collection
-        /// </summary>
-        /// <param name="methodInfo"></param>
-        /// <returns></returns>
-        public static IDictionary<string, Parameter> GetParameters(MethodInfo methodInfo)
-        {
-            return GetParameterInfos(methodInfo).ToDictionary(p => p.Name.ToLowerInvariant(), p => new Parameter(p.Name, p));
-        }
     }
 }

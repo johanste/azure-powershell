@@ -227,27 +227,6 @@ namespace Microsoft.Azure.Commands.Common.Test.Mocks
         {
             PSHostUserInterface _hostUI = new MockPSHostUI();
             Version _version = new Version(1, 0, 0);
-            Guid _instanceId = Guid.NewGuid();
-            public override CultureInfo CurrentCulture
-            {
-                get { return CultureInfo.CurrentCulture; }
-            }
-
-            public override CultureInfo CurrentUICulture
-            {
-                get
-                {
-                    return CultureInfo.CurrentUICulture;
-                }
-            }
-
-            public override Guid InstanceId
-            {
-                get
-                {
-                    return _instanceId;
-                }
-            }
 
             public override bool IsInputRedirected
             {
@@ -290,23 +269,12 @@ namespace Microsoft.Azure.Commands.Common.Test.Mocks
 
             class MockPSHostUI : PSHostUserInterface
             {
-                public override Dictionary<string, PSObject> Prompt(string caption, string message, Collection<FieldDescription> descriptions)
-                {
-                    return new Dictionary<string, PSObject>();
-                }
-
                 public override int PromptForChoice(string caption, string message, Collection<ChoiceDescription> choices, int defaultChoice)
                 {
                     return 0;
                 }
 
                 public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName)
-                {
-                    return new PSCredential("user@contoso.org", "P@$$w0rd!");
-                }
-
-                public override PSCredential PromptForCredential(string caption, string message, string userName, string targetName,
-                    PSCredentialTypes allowedCredentialTypes, PSCredentialUIOptions options)
                 {
                     return new PSCredential("user@contoso.org", "P@$$w0rd!");
                 }

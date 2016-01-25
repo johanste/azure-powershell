@@ -21,12 +21,6 @@ namespace Microsoft.CLU.Common
         /// </summary>
         internal const string CmdletsIndexFileName = "_cmdlets.idx";
 
-#if PSCMDLET_HELP
-        /// <summary>
-        /// The standard name of a name mapping file on disk.
-        /// </summary>
-        internal const string NameMappingFileName = "_namemap.idx";
-#endif
         /// <summary>
         /// The name of a package's index folder.
         /// </summary>

@@ -66,14 +66,6 @@ namespace System.Management.Automation
         }
         private string _defaultParameterSet;
 
-        public string HelpFile
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public override string ToString()
         {
             return Name;

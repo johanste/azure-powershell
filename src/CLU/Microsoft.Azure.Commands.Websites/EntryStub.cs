@@ -13,17 +13,21 @@
 // ----------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Reflection;
 
-namespace Microsoft.Azure.Commands
+namespace Microsoft.Azure.Commands.Websites
 {
     public class EntryStub
     {
-        public static void Main(string[] args)
+        public static int Main(string[] args)
         {
-            // empty entry point
+            var baseDirectory = new System.IO.DirectoryInfo(AppContext.BaseDirectory);
+            var config = new Microsoft.CLU.Common.PackageConfig(
+                "Microsoft.Azure.Commands.Websites",
+                new System.Reflection.Assembly[] { typeof(EntryStub).GetTypeInfo().Assembly },
+                "AzureRm");
+
+            return Microsoft.CLU.CommandPackage.CommandPackage.Handle(config, baseDirectory.Parent.Parent, args);
         }
     }
 }

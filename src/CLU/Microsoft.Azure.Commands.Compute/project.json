@@ -17,6 +17,7 @@
   "dependencies": {
     "System.Linq": "4.0.1-beta-23516",
     "Microsoft.CLU": "1.0.0",
+    "Microsoft.CLU.CommandPackage": "",
     "Commands.Common": "",
     "Commands.Common.Authentication": "",
     "Commands.Common.Storage": "",

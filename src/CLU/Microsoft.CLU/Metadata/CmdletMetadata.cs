@@ -36,7 +36,7 @@ namespace Microsoft.CLU.Metadata
         /// <param name="cmdletType">The type of the cmdlet</param>
         /// <param name="cmdletInstance">The instance of a cmdlet</param>
         /// <returns></returns>
-        public static CmdletMetadata Load(Type cmdletType, Cmdlet cmdletInstance)
+        private static CmdletMetadata Load(Type cmdletType, Cmdlet cmdletInstance)
         {
             Debug.Assert(cmdletType != null);
             Debug.Assert(cmdletInstance != null);
