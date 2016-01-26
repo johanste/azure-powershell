@@ -147,6 +147,8 @@ namespace CLU.Packages
 
     public class PackageManager
     {
+        private readonly string[] _runtimes = new string[] { "win7-x64" }; //, "osx.10.10-x64", "ubuntu.14.04-x64"
+        private string[] _packageSources;
         private string _repository;
         private string _packagePath;
 
@@ -160,6 +162,7 @@ namespace CLU.Packages
         {
             this._repository = repository.Path;
             this._packagePath = packagePath;
+            this._packageSources = this._runtimes.Select(r => Path.Combine(this._repository, r)).ToArray();
         }
 
         public void UninstallPackage(string name, SemanticVersion version, bool one, bool two)
@@ -227,7 +230,12 @@ namespace CLU.Packages
 
         public void InstallPackage(IPackage package, bool one, bool two)
         {
-            var result = InstallPackageAsync(package.Name, package.Version != null ? package.Version.ToString() : "*", new string[] { this._repository }, this._packagePath).Result;
+            var result = InstallPackageAsync(
+                package.Name,
+                package.Version != null ? package.Version.ToString() : "*",
+                this._packageSources,
+                this._packagePath
+                ).Result;
 
             var packageInstalled = PackageInstalled;
             if (packageInstalled != null)
