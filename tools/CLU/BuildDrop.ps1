@@ -14,6 +14,8 @@ if (!($dropLocation))
     $dropLocation = "$workspaceDirectory\drop"
 }
 
+$runtimes = @("win7-x64", "osx.10.10-x64", "ubuntu.14.04-x64")
+
 if (!(Test-Path -Path $dropLocation -PathType Container))
 {
     mkdir "$dropLocation"
@@ -24,19 +26,12 @@ if (!(Test-Path -Path "$dropLocation\CommandRepo" -PathType Container))
     mkdir "$dropLocation\CommandRepo"
 }
 
-if (!(Test-Path -Path "$dropLocation\CommandRepo\win7-x64" -PathType Container))
-{
-    mkdir "$dropLocation\CommandRepo\win7-x64"
-}
-
-if (!(Test-Path -Path "$dropLocation\CommandRepo\osx.10.10-x64" -PathType Container))
-{
-    mkdir "$dropLocation\CommandRepo\osx.10.10-x64"
-}
-
-if (!(Test-Path -Path "$dropLocation\CommandRepo\ubuntu.14.04-x64" -PathType Container))
-{
-    mkdir "$dropLocation\CommandRepo\ubuntu.14.04-x64"
+foreach ($runtime in $runtimes)
+{ 
+    if (!(Test-Path -Path "$dropLocation\CommandRepo\$runtime" -PathType Container))
+    {
+        mkdir "$dropLocation\CommandRepo\$runtime"
+    }
 }
 
 if (!(Test-Path -Path "$dropLocation\clurun" -PathType Container))
@@ -57,18 +52,19 @@ $commandPackages =  Get-ChildItem -path $sourcesRoot  | Get-ChildItem -File -Fil
 
 foreach($commandPackage in $commandPackages)
 {
-    $commandPackageName = $commandPackage.Package
-    $commandPackageDir  = $commandPackage.Directory
-    $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"
-
-    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo\win7-x64 win7-x64"
-    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo\osx.10.10-x64 osx.10.10-x64"
-    Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory $packageVersion $dropLocation\CommandRepo\ubuntu.14.04-x64 ubuntu.14.04-x64"
+        $commandPackageName = $commandPackage.Package
+        $commandPackageDir  = $commandPackage.Directory
+        $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"        
+        
+        foreach ($runtime in $runtimes)
+        {       
+            PowerShell "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"            
+        }                
 }
 
 if (!($excludeCluRun))
 {
-    foreach ($runtime in @("win7-x64", "osx.10.10-x64", "ubuntu.14.04-x64"))
+    foreach ($runtime in $runtimes)
     {
         $cluRunOutput = "$dropLocation\clurun\$runtime"
         dotnet publish "$sourcesRoot\clurun" --framework dnxcore50 --runtime $runtime --output $cluRunOutput
@@ -77,14 +73,6 @@ if (!($excludeCluRun))
         {
             # use released coreconsole file from https://github.com/dotnet/cli
             Copy-Item -Path "$workspaceDirectory\tools\CLU\$runtime\coreconsole" -Destination "$cluRunOutput\clurun" -Force
-
-            # Remove all extra exes that end up in the output directory...
-            #Get-ChildItem -Path "$cluRunOutput" -Filter "*.exe" | Remove-Item
-        }
-        else 
-        {
-            # Remove all extra exes that end up in the output directory...
-            #Get-Childitem -path "$cluRunOutput" -Filter *.exe | Where-Object -Property "Name" -Value "clurun.exe" -NotMatch | Remove-Item
-        }
+        }        
     }
 }
