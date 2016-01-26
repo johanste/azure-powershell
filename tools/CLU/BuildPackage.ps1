@@ -37,8 +37,8 @@ $refFileText = ""
 $refFiles | %{$refFileText +=  ("        <reference file=""" + $_.Name + """/>`r`n")}
 $contentFileText = ""
 if ($packageId -ne "Microsoft.CLU.Commands") 
-{if 
-    (Test-Path "$packageSource\content\help") 
+{
+    if (Test-Path "$packageSource\content\help") 
     {    
         $contentFileText += "    <file src=""content\*xml"" target=""content""/>`r`n"
     

@@ -52,14 +52,14 @@ $commandPackages =  Get-ChildItem -path $sourcesRoot  | Get-ChildItem -File -Fil
 
 foreach($commandPackage in $commandPackages)
 {
-        $commandPackageName = $commandPackage.Package
-        $commandPackageDir  = $commandPackage.Directory
-        $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"        
-        
-        foreach ($runtime in $runtimes)
-        {       
-            PowerShell "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"            
-        }                
+    $commandPackageName = $commandPackage.Package
+    $commandPackageDir  = $commandPackage.Directory
+    $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"        
+    
+    foreach ($runtime in $runtimes)
+    {       
+        PowerShell "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"            
+    }                
 }
 
 if (!($excludeCluRun))
