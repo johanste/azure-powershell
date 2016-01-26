@@ -16,6 +16,12 @@
       }
     }
   },
+  "runtimes": {
+    "osx.10.10-x64": { },
+    "ubuntu.14.04-x64": { },
+    "win7-x64": { },
+    "win7-x86": { }
+  },
   "dependencies": {
     "Microsoft.CLU": "",
     "Microsoft.CLU.CommandPackage": ""
