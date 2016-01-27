@@ -56,5 +56,8 @@ xcopy %root%\drop\clurun\win7-x64\pkgs %root%\drop\clurun\ubuntu.14.04-x64\pkgs 
 copy /Y %root%\drop\clurun\win7-x64\msclu.cfg %root%\drop\clurun\ubuntu.14.04-x64
 copy /Y %azuresh% %root%\drop\clurun\ubuntu.14.04-x64\az
 
+del %root%\drop\clurun\ubuntu.14.04-x64\*.exe /s
+del %root%\drop\clurun\osx.10.10-x64\*.exe /s
+
 REM, windows version also needs it for bash based testing
 copy /Y %~dp0\az.win.sh %root%\drop\clurun\win7-x64\az
