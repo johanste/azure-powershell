@@ -50,16 +50,29 @@ $commandPackages =  Get-ChildItem -path $sourcesRoot  | Get-ChildItem -File -Fil
                         Where-Object -Property Package -Like -Value $commandPackagesToBuild  |
                         Where-Object -Property Package -NotLike -Value $exceptCommandPackagesToBuild
 
+$jobs = @()
+
 foreach($commandPackage in $commandPackages)
 {
     $commandPackageName = $commandPackage.Package
     $commandPackageDir  = $commandPackage.Directory
-    $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"        
-    
+    $buildOutputDirectory = Join-Path -path $commandPackageDir -ChildPath "bin\Debug\publish"
+
     foreach ($runtime in $runtimes)
-    {       
-        PowerShell "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"            
-    }                
+    {  
+        $jobs += @((start-job -Name "$commandPackageName $runtime" `
+        {  
+            param($buildPackageScriptPath, $commandPackageDir, $commandPackageName, $buildOutputDirectory, $runtime, $packageVersion, $dropLocation)
+            PowerShell "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"
+        } -Arg $buildPackageScriptPath, $commandPackageDir, $commandPackageName, $buildOutputDirectory, $runtime, $packageVersion, $dropLocation))
+    }
+}
+
+foreach($job in $jobs)
+{
+    "Waiting for $($job | select Name)"
+    wait-job $job
+    receive-job $job
 }
 
 if (!($excludeCluRun))
@@ -72,7 +85,7 @@ if (!($excludeCluRun))
         if (!($runtime.StartsWith("win")))
         {
             # use released coreconsole file from https://github.com/dotnet/cli
-            Copy-Item -Path "$workspaceDirectory\tools\CLU\$runtime\coreconsole" -Destination "$cluRunOutput\clurun" -Force
+            Copy-Item -Path "$workspaceDirectory\tools\CLU\$runtime\coreconsole" -Destination "$cluRunOutput" -Force
         }        
     }
 }

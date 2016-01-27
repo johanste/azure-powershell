@@ -16,10 +16,11 @@ if ([string]::IsNullOrWhiteSpace($env:WORKSPACE) -or !(Test-Path $env:WORKSPACE)
 
 $packageSource = $packageSource.TrimEnd('\\')
 Write-Host "using package id: $packageId, package source: $packageSource, packageVersion: $packageVersion"
+$buildDir = [io.path]::combine($cmdletsDir, "bin", "build", $runtimeType)
+New-Item $buildDir -ItemType Directory -Force
+cd $buildDir
 dotnet publish $cmdletsDir -f dnxcore50 -r $runtimeType -o $packageSource
-#dotnet publish $cmdletsDir -r win7-x64 
-#dotnet publish $cmdletsDir -r osx.10.10-x64
-#dotnet publish $cmdletsDir -r ubuntu.14.04-x64
+
 if (Test-Path $cmdletsDir\content)
 {
     Copy-Item -Path $cmdletsDir\content -Destination $packageSource\content -Recurse -Force
@@ -32,7 +33,8 @@ Write-Host "Creating dynamic nuspec package in: $nuSpecOutput"
 
 $fileContent = Get-Content $nuSpecTemplate
 $files = (Get-ChildItem $packageSource | Where -FilterScript {!$_.Name.Contains("nuspec")} | Select-Object -Property Name)
-$refFiles = $files | Where -FilterScript { $_.Name.EndsWith(".dll")}
+$refFiles = $files | Where -FilterScript { $_.Name.EndsWith(".dll") }
+$additionalFiles = $files | Where -FilterScript { $_.Name.EndsWith(".exe") }
 $refFileText = ""
 $refFiles | %{$refFileText +=  ("        <reference file=""" + $_.Name + """/>`r`n")}
 $contentFileText = ""
@@ -47,6 +49,7 @@ if ($packageId -ne "Microsoft.CLU.Commands")
 }
 $sourceFileText = ""
 $refFiles | %{$sourceFileText += ("    <file src=""" + $_.Name + """ target=""lib\dnxcore50""/>`r`n")}
+$additionalFiles | %{$sourceFileText += ("    <file src=""" + $_.Name + """ target=""lib\dnxcore50""/>`r`n")}
 $outputContent = $fileContent -replace "%PackageVersion%", $packageVersion 
 $outputContent = $outputContent -replace "%ReferenceFiles%", $refFileText
 $outputContent = $outputContent -replace "%SourceFiles%", $sourceFileText 
