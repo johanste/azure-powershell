@@ -271,13 +271,13 @@ namespace Microsoft.Azure.Commands.Compute.Models
                     //ps.Invoke();
                     return;
                 //}
-
-                var progressCommand = String.Format(@"Write-Progress -Id {0} -Activity '{1}' -Status '{2}' -SecondsRemaining {3} -PercentComplete {4}", 2, Rsrc.PSSyncOutputEventsProgressEmptyBlockDetection, Rsrc.PSSyncOutputEventsEmptyBlockDetectionDetecting, -1, ((double)processedRangeCount / totalRangeCount) * 100);
-                //ps.Runspace = runspace;
-                // TODO: CLU
-                Console.WriteLine(progressCommand);
-                //ps.AddScript(progressCommand);
-                //ps.Invoke();
+                ;
+                //var progressCommand = String.Format(@"Write-Progress -Id {0} -Activity '{1}' -Status '{2}' -SecondsRemaining {3} -PercentComplete {4}", 2, Rsrc.PSSyncOutputEventsProgressEmptyBlockDetection, Rsrc.PSSyncOutputEventsEmptyBlockDetectionDetecting, -1, ((double)processedRangeCount / totalRangeCount) * 100);
+                ////ps.Runspace = runspace;
+                //// TODO: CLU
+                //Console.WriteLine(progressCommand);
+                ////ps.AddScript(progressCommand);
+                ////ps.Invoke();
             }
         }
 
