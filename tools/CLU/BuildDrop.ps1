@@ -1,4 +1,4 @@
-param([string]$dropLocation, [string]$packageVersion="0.0.1", [string] $commandPackagesToBuild = "*", [string] $exceptCommandPackagesToBuild, [switch] $excludeCluRun)
+param([string]$dropLocation, [string]$packageVersion="0.0.1", [string] $commandPackagesToBuild = "*", [string] $exceptCommandPackagesToBuild, [switch] $excludeCluRun, [string] $runtime)
 
 $thisScriptDirectory = Split-Path $MyInvocation.MyCommand.Path -Parent
 
@@ -14,7 +14,12 @@ if (!($dropLocation))
     $dropLocation = "$workspaceDirectory\drop"
 }
 
-$runtimes = @("win7-x64", "osx.10.10-x64", "ubuntu.14.04-x64")
+$runtimes = @($runtime)
+if (!($runtime))
+{
+    $runtimes = @("win7-x64", "osx.10.10-x64", "ubuntu.14.04-x64")    
+}
+
 
 if (!(Test-Path -Path $dropLocation -PathType Container))
 {
@@ -63,7 +68,7 @@ foreach($commandPackage in $commandPackages)
         $jobs += @((start-job -Name "$commandPackageName $runtime" `
         {  
             param($buildPackageScriptPath, $commandPackageDir, $commandPackageName, $buildOutputDirectory, $runtime, $packageVersion, $dropLocation)
-            PowerShell "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"
+            Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"
         } -Arg $buildPackageScriptPath, $commandPackageDir, $commandPackageName, $buildOutputDirectory, $runtime, $packageVersion, $dropLocation))
     }
 }

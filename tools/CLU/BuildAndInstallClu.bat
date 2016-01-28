@@ -40,7 +40,6 @@ rename %root%\drop\clurun\win7-x64\azure.bat az.bat
 
 REM setup osx and linux bits which can be xcopied and run. 
 REM note, for known nuget bugs, skip --install by copying over cmdlet packages.
-xcopy %root%\drop\clurun\win7-x64\pkgs %root%\drop\clurun\osx.10.10-x64\pkgs /S /Q /I /Y
 copy /Y %root%\drop\clurun\win7-x64\msclu.cfg %root%\drop\clurun\osx.10.10-x64
 
 REM: copy over the pre-cooked az.sh and ensure correct line endings
@@ -52,12 +51,8 @@ echo [IO.File]::WriteAllText($_, $contents) >> %temp%\fixLineEndings.ps1
 echo } >> %temp%\fixLineEndings.ps1
 @powershell -file %temp%\fixLineEndings.ps1
 
-xcopy %root%\drop\clurun\win7-x64\pkgs %root%\drop\clurun\ubuntu.14.04-x64\pkgs /S /Q /I /Y
 copy /Y %root%\drop\clurun\win7-x64\msclu.cfg %root%\drop\clurun\ubuntu.14.04-x64
 copy /Y %azuresh% %root%\drop\clurun\ubuntu.14.04-x64\az
-
-del %root%\drop\clurun\ubuntu.14.04-x64\*.exe /s
-del %root%\drop\clurun\osx.10.10-x64\*.exe /s
 
 REM, windows version also needs it for bash based testing
 copy /Y %~dp0\az.win.sh %root%\drop\clurun\win7-x64\az

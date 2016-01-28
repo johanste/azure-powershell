@@ -28,7 +28,7 @@ if (Test-Path $cmdletsDir\content)
 Copy-Item -Path $cmdletsDir\*xml -Destination $packageSource\content -Force
 
 $nuSpecTemplate = (Get-ChildItem ([System.IO.Path]::Combine($cmdletsDir, ($packageId + ".nuspec.template"))))
-$nuSpecOutput = [System.IO.Path]::Combine($packageSource, ($packageId + ".nuspec"))
+$nuSpecOutput = [System.IO.Path]::Combine($packageSource, ($packageId + ".$runtimeType.nuspec"))
 Write-Host "Creating dynamic nuspec package in: $nuSpecOutput"
 
 $fileContent = Get-Content $nuSpecTemplate
@@ -51,6 +51,7 @@ $sourceFileText = ""
 $refFiles | %{$sourceFileText += ("    <file src=""" + $_.Name + """ target=""lib\dnxcore50""/>`r`n")}
 $additionalFiles | %{$sourceFileText += ("    <file src=""" + $_.Name + """ target=""lib\dnxcore50""/>`r`n")}
 $outputContent = $fileContent -replace "%PackageVersion%", $packageVersion 
+$outputContent = $outputContent -replace "%Runtime%", $runtimeType
 $outputContent = $outputContent -replace "%ReferenceFiles%", $refFileText
 $outputContent = $outputContent -replace "%SourceFiles%", $sourceFileText 
 $outputContent = $outputContent -replace "%ContentFiles%", $contentFileText
