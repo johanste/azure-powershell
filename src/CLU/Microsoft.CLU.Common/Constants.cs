@@ -190,6 +190,16 @@ namespace Microsoft.CLU.Common
         /// </summary>
         internal const string FileArgumentPrefix = "@";
 
+        /// <summary>
+        /// All the supported runtime platforms
+        /// </summary>
+        internal static readonly string[] Runtimes = new string[] { "win7-x64", "osx.10.10-x64", "ubuntu.14.04-x64" };
+
+        /// <summary>
+        /// The default runtime platform
+        /// </summary>
+        internal const string DefaultRuntime = "win7-x64";
+
         #region TODO: The constants in this region should go to resource file
 
         internal const string MissingCommandNounVerb = "Cmdlet not found";

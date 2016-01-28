@@ -1,5 +1,7 @@
 ﻿param([string]$cmdletsDir, [string]$packageId, [string]$packageSource, [string]$packageVersion, [string]$outputDir, [string]$runtimeType)
 
+Set-StrictMode -Version 3
+
 if (!(Test-Path $cmdletsDir))
 {
     throw "cmdletsDir: '$cmdletsDir' must be an existing directory containing cmdlet code"
@@ -19,6 +21,7 @@ Write-Host "using package id: $packageId, package source: $packageSource, packag
 $buildDir = [io.path]::combine($cmdletsDir, "bin", "build", $runtimeType)
 New-Item $buildDir -ItemType Directory -Force
 cd $buildDir
+Write-Host "FOOBAR: dotnet publish $cmdletsDir -f dnxcore50 -r $runtimeType -o $packageSource"
 dotnet publish $cmdletsDir -f dnxcore50 -r $runtimeType -o $packageSource
 
 if (Test-Path $cmdletsDir\content)

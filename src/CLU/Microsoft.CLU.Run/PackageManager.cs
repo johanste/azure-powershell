@@ -6,6 +6,7 @@ using NuGet.Commands;
 using NuGet.Configuration;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
+using Microsoft.CLU.Common;
 
 namespace CLU.Packages
 {
@@ -147,7 +148,6 @@ namespace CLU.Packages
 
     public class PackageManager
     {
-        private readonly string[] _runtimes = new string[] { "win7-x64" }; //, "osx.10.10-x64", "ubuntu.14.04-x64"
         private string[] _packageSources;
         private string _repository;
         private string _packagePath;
@@ -162,7 +162,7 @@ namespace CLU.Packages
         {
             this._repository = repository.Path;
             this._packagePath = packagePath;
-            this._packageSources = this._runtimes.Select(r => Path.Combine(this._repository, r)).ToArray();
+            this._packageSources = Constants.Runtimes.Select(r => Path.Combine(this._repository, r)).ToArray();
         }
 
         public void UninstallPackage(string name, SemanticVersion version, bool one, bool two)

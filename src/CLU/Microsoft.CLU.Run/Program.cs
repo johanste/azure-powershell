@@ -1,6 +1,8 @@
-﻿using Microsoft.CLU.Common.Properties;
+﻿using Microsoft.CLU.Common;
+using Microsoft.CLU.Common.Properties;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 
@@ -53,15 +55,31 @@ namespace Microsoft.CLU.Run
             }
 
             var mode = GetMode(arguments);
+            var runtime = GetRuntime(arguments);
+
             //TODO: #26 Decide the best way to find rootPath
-            var assemblyLocation = typeof(Microsoft.CLU.Common.EntryPoint).GetTypeInfo().Assembly.Location;
-            var rootPath = System.IO.Path.GetDirectoryName(assemblyLocation);
-            CLUEnvironment.SetRootPaths(rootPath);  
+            var assemblyLocation = typeof(EntryPoint).GetTypeInfo().Assembly.Location;
+            var rootPath = Path.Combine(
+                Path.GetDirectoryName(assemblyLocation),
+                "..",
+                runtime);
+            CLUEnvironment.SetRootPaths(rootPath);
 
             // Run the command.
             return mode.Run(arguments);
         }
 
+        /// <summary>
+        /// Get runtime platform specified in arguments.  Only a single runtime can be passed at a time, 
+        /// otherwise the first is chosen.
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        private string GetRuntime(string[] arguments)
+        {
+            return Constants.Runtimes.FirstOrDefault(r => arguments.Any(a => a.Contains(r)))
+                ?? Constants.DefaultRuntime;
+        }
 
         private void DisplayHelp()
         {

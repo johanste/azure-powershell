@@ -27,14 +27,16 @@ if not exist %mscluCfg% (
 echo ^(Get-Content "%mscluCfg%"^) ^| ForEach-Object { $_ -replace "TOFILL", "%root%\drop\CommandRepo" } ^| Set-Content "%mscluCfg%"^ >"%temp%\Rep.ps1"
 @powershell -file %temp%\Rep.ps1
 
-%root%\drop\clurun\win7-x64\clurun.exe --install
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.Cmdlets
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Websites
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage
-%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute
+for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.Cmdlets.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Websites.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
+	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
+)
 
 rename %root%\drop\clurun\win7-x64\azure.bat az.bat
 
