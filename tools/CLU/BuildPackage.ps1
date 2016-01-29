@@ -21,7 +21,6 @@ Write-Host "using package id: $packageId, package source: $packageSource, packag
 $buildDir = [io.path]::combine($cmdletsDir, "bin", "build", $runtimeType)
 New-Item $buildDir -ItemType Directory -Force
 cd $buildDir
-Write-Host "FOOBAR: dotnet publish $cmdletsDir -f dnxcore50 -r $runtimeType -o $packageSource"
 dotnet publish $cmdletsDir -f dnxcore50 -r $runtimeType -o $packageSource
 
 if (Test-Path $cmdletsDir\content)
@@ -35,9 +34,9 @@ $nuSpecOutput = [System.IO.Path]::Combine($packageSource, ($packageId + ".$runti
 Write-Host "Creating dynamic nuspec package in: $nuSpecOutput"
 
 $fileContent = Get-Content $nuSpecTemplate
-$files = (Get-ChildItem $packageSource | Where -FilterScript {!$_.Name.Contains("nuspec")} | Select-Object -Property Name)
-$refFiles = $files | Where -FilterScript { $_.Name.EndsWith(".dll") }
-$additionalFiles = $files | Where -FilterScript { $_.Name.EndsWith(".exe") }
+$files = (Get-ChildItem $packageSource | Where -FilterScript { !$_.Name.Contains("nuspec") -and !$_.PSIsContainer } | Select-Object -Property Name)
+$refFiles = $files | Where -FilterScript { $_.Name.EndsWith(".dll") } 
+$additionalFiles = $files | Where -FilterScript { !$_.Name.EndsWith(".pdb") -and !$_.Name.Equals("coreconsole") } # Nuget Bug: files without extensions can't be added to the package
 $refFileText = ""
 $refFiles | %{$refFileText +=  ("        <reference file=""" + $_.Name + """/>`r`n")}
 $contentFileText = ""
