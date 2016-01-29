@@ -38,6 +38,14 @@ for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
 	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
 )
 
+REM Replace *.exe with static copy for non-Windows drops
+echo param([string] $runtime) > %temp%\FixNonWindowsExes.ps1
+echo Get-ChildItem %root%\drop\clurun\$runtime -Recurse -Include *.exe ^| %%{ Copy-Item -Path "%root%\tools\CLU\$runtime\coreconsole" -Destination "$($_.DirectoryName)\$($_.BaseName)" -Force } >> %temp%\FixNonWindowsExes.ps1
+@powershell -file %temp%\FixNonWindowsExes.ps1 -runtime ubuntu.14.04-x64 
+@powershell -file %temp%\FixNonWindowsExes.ps1 -runtime osx.10.10-x64
+del %root%\drop\clurun\osx.10.10-x64\*.exe /s
+del %root%\drop\clurun\ubuntu.14.04-x64\*.exe /s
+
 rename %root%\drop\clurun\win7-x64\azure.bat az.bat
 
 REM setup osx and linux bits which can be xcopied and run. 

@@ -86,11 +86,5 @@ if (!($excludeCluRun))
     {
         $cluRunOutput = "$dropLocation\clurun\$runtime"
         dotnet publish "$sourcesRoot\clurun" --framework dnxcore50 --runtime $runtime --output $cluRunOutput
-
-        if (!($runtime.StartsWith("win")))
-        {
-            # use released coreconsole file from https://github.com/dotnet/cli
-            Copy-Item -Path "$workspaceDirectory\tools\CLU\$runtime\coreconsole" -Destination "$cluRunOutput" -Force
-        }        
     }
 }
