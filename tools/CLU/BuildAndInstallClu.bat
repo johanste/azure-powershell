@@ -30,30 +30,27 @@ copy /Y %mscluCfg% %root%\drop\clurun\osx.10.10-x64
 copy /Y %mscluCfg% %root%\drop\clurun\ubuntu.14.04-x64
 
 for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.Cmdlets.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Websites.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
-	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.Cmdlets.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Websites.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
 )
 
 REM Build indexes for all drops using Windows exes
-echo Get-ChildItem "%root%\drop\clurun\win7-x64" -Filter "*.exe" -Recurse ^|` 						> %temp%\BuildIndexes.ps1
-echo     %%{  														>> %temp%\BuildIndexes.ps1
-echo         if ($_.Name -ne "CoreConsole.exe" -and $_.Name -ne "clurun.exe" -and $_.Name -ne "Microsoft.CLU.exe")  	>> %temp%\BuildIndexes.ps1
-echo         { 														>> %temp%\BuildIndexes.ps1
-echo             cd $_.Directory 											>> %temp%\BuildIndexes.ps1
-echo		 Write-Host "$($_.FullName) --buildIndex"								>> %temp%\BuildIndexes.ps1
-echo             Invoke-Expression "$($_.FullName) --buildIndex" 							>> %temp%\BuildIndexes.ps1
-echo 		 Copy-Item -Force "$($_.Directory)\..\..\_indexes\" 							>> %temp%\BuildIndexes.ps1
-echo			"%root%\drop\clurun\osx.10.10-x64\pkgs\$($_.BaseName).osx.10.10-x64\0.0.1\_indexes\"		>> %temp%\BuildIndexes.ps1
-echo 		 Copy-Item -Force "$($_.Directory)\..\..\_indexes\" 							>> %temp%\BuildIndexes.ps1
-echo			"%root%\drop\clurun\ubuntu.14.04-x64\pkgs\$($_.BaseName).ubuntu.14.04-x64\0.0.1\_indexes\"	>> %temp%\BuildIndexes.ps1
-echo         } 														>> %temp%\BuildIndexes.ps1
-echo     } 														>> %temp%\BuildIndexes.ps1
+echo Get-ChildItem "%root%\drop\clurun\win7-x64" -Filter "*.exe" -Recurse ^|`                                                                                         > %temp%\BuildIndexes.ps1
+echo     %%{                                                                                                                                                          >> %temp%\BuildIndexes.ps1
+echo         if ($_.Name -ne "CoreConsole.exe" -and $_.Name -ne "clurun.exe" -and $_.Name -ne "Microsoft.CLU.exe")                                                    >> %temp%\BuildIndexes.ps1
+echo         {                                                                                                                                                        >> %temp%\BuildIndexes.ps1
+echo             cd $_.Directory                                                                                                                                      >> %temp%\BuildIndexes.ps1
+echo             Invoke-Expression "$($_.FullName) --buildIndex"                                                                                                      >> %temp%\BuildIndexes.ps1
+echo                  Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%root%\drop\clurun\osx.10.10-x64\pkgs\$($_.BaseName).osx.10.10-x64\0.0.1\"         >> %temp%\BuildIndexes.ps1
+echo                  Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%root%\drop\clurun\ubuntu.14.04-x64\pkgs\$($_.BaseName).ubuntu.14.04-x64\0.0.1\"   >> %temp%\BuildIndexes.ps1
+echo         }                                                                                                                                                        >> %temp%\BuildIndexes.ps1
+echo     }                                                                                                                                                            >> %temp%\BuildIndexes.ps1
 @powershell -file %temp%\BuildIndexes.ps1 
 
 REM In non-Windows, replace *.exe with static copy of CoreConsole
@@ -64,22 +61,15 @@ echo Get-ChildItem %root%\drop\clurun\$runtime -Recurse -Include *.exe ^| %%{ Co
 del %root%\drop\clurun\osx.10.10-x64\*.exe /s
 del %root%\drop\clurun\ubuntu.14.04-x64\*.exe /s
 
-rename %root%\drop\clurun\win7-x64\azure.bat az.bat
-
-REM setup osx and linux bits which can be xcopied and run. 
-REM note, for known nuget bugs, skip --install by copying over cmdlet packages.
-copy /Y %root%\drop\clurun\win7-x64\msclu.cfg %root%\drop\clurun\osx.10.10-x64
-
 REM: copy over the pre-cooked az.sh and ensure correct line endings
 copy /Y %~dp0\az.sh %root%\drop\clurun\osx.10.10-x64\az
 set azuresh=%root%\drop\clurun\osx.10.10-x64\az
-echo Get-ChildItem %azuresh% ^| ForEach-Object { >  %temp%\fixLineEndings.ps1
-echo $contents = [IO.File]::ReadAllText($_) -replace "`r`n?", "`n" >> %temp%\fixLineEndings.ps1 
-echo [IO.File]::WriteAllText($_, $contents) >> %temp%\fixLineEndings.ps1 
-echo } >> %temp%\fixLineEndings.ps1
+echo Get-ChildItem %azuresh% ^| ForEach-Object {                            >  %temp%\fixLineEndings.ps1
+echo         $contents = [IO.File]::ReadAllText($_) -replace "`r`n?", "`n"  >> %temp%\fixLineEndings.ps1 
+echo         [IO.File]::WriteAllText($_, $contents)                         >> %temp%\fixLineEndings.ps1 
+echo }                                                                      >> %temp%\fixLineEndings.ps1
 @powershell -file %temp%\fixLineEndings.ps1
 
-copy /Y %root%\drop\clurun\win7-x64\msclu.cfg %root%\drop\clurun\ubuntu.14.04-x64
 copy /Y %azuresh% %root%\drop\clurun\ubuntu.14.04-x64\az
 
 REM, windows version also needs it for bash based testing

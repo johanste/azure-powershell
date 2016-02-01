@@ -36,7 +36,7 @@ Write-Host "Creating dynamic nuspec package in: $nuSpecOutput"
 $fileContent = Get-Content $nuSpecTemplate
 $files = (Get-ChildItem $packageSource | Where -FilterScript { !$_.Name.Contains("nuspec") -and !$_.PSIsContainer } | Select-Object -Property Name)
 $refFiles = $files | Where -FilterScript { $_.Name.EndsWith(".dll") } 
-$additionalFiles = $files | Where -FilterScript { !$_.Name.EndsWith(".pdb") -and !$_.Name.Equals("coreconsole") } # Nuget Bug: files without extensions can't be added to the package
+$additionalFiles = $files | Where -FilterScript { !$_.Name.EndsWith(".pdb") -and !$_.Name.Equals("coreconsole") -and !$_.Name.Equals("content") } # Nuget Bug: files without extensions can't be added to the package
 $refFileText = ""
 $refFiles | %{$refFileText +=  ("        <reference file=""" + $_.Name + """/>`r`n")}
 $contentFileText = ""
@@ -61,4 +61,4 @@ Set-Content -Value $outputContent -Path $nuspecOutput
 
 Write-Host "Creating nuget package..."
 cmd /c "$env:WORKSPACE\tools\Nuget.exe pack $nuspecOutput -OutputDirectory $outputDir"
-Pop-Location
+Pop-Location 
