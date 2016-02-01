@@ -1,9 +1,12 @@
 ﻿using Microsoft.CLU.Common.Properties;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
-namespace CLURun
+namespace clurun
 {
     /// <summary>
     /// Type responsible for parsing and bootstrapping command execution.
@@ -15,16 +18,55 @@ namespace CLURun
         /// </summary>
         /// <param name="args">The commandline arguments</param>
         public static int Main(string[] args)
-        { 
+        {
             var debugClu = Environment.GetEnvironmentVariable("DebugCLU");
             if (!String.IsNullOrEmpty(debugClu))
             {
-                System.Console.WriteLine("This is your chance to attach a debugger...");
-                System.Console.ReadLine();
+                Console.WriteLine("This is your chance to attach a debugger...");
+                Console.ReadLine();
             }
-            return (int) Microsoft.CLU.Run.CLURun.Execute(args);
 
-            
+            if (args.Contains("--install"))
+            {
+                return (int)Microsoft.CLU.Run.CLURun.Execute(args);
+            }
+
+            string argsString = string.Join(" ", args);
+            string[] indexFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.idx", SearchOption.AllDirectories);
+            var commands = indexFiles
+                .SelectMany(f => File.ReadAllLines(f))
+                .Select(f => new CommandIndex(f));
+            var command = commands.OrderByDescending(c => CommandMatcher.GetMatchScore(c.Args, argsString)).FirstOrDefault(c => argsString.Contains(c.Args));
+
+            if (command == null)
+            {
+                ShowHelp(argsString, commands);
+                return -1;
+            }
+
+            return Execute(command, args);
+        }
+
+        private static int Execute(CommandIndex command, string[] args)
+        {
+            string extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "";
+            string executablePath = Directory.GetFiles(Directory.GetCurrentDirectory(), command.Package + extension, SearchOption.AllDirectories).FirstOrDefault();
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = executablePath;
+            startInfo.Arguments = string.Join(" ", args);
+
+            Process process = Process.Start(startInfo);
+            process.WaitForExit();
+            return process.ExitCode;
+        }
+
+        private static void ShowHelp(string argsString, IEnumerable<CommandIndex> commands)
+        {
+            foreach (var c in commands.Where(c => c.Args.StartsWith(argsString)))
+            {
+                Console.WriteLine(c.Args);
+            }
         }
     }
 }

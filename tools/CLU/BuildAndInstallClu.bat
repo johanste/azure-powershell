@@ -19,13 +19,15 @@ popd
 
 @powershell -file %~dp0\BuildDrop.ps1
 
-REM cook a msclu.cfg with a correct local repro path. 
+REM cook a msclu.cfg with a correct local repo path. 
 set mscluCfg=%root%\drop\clurun\win7-x64\msclu.cfg
 if not exist %mscluCfg% (
     copy /Y %root%\src\CLU\clurun\msclu.cfg %root%\drop\clurun\win7-x64
 )
 echo ^(Get-Content "%mscluCfg%"^) ^| ForEach-Object { $_ -replace "TOFILL", "%root%\drop\CommandRepo" } ^| Set-Content "%mscluCfg%"^ >"%temp%\Rep.ps1"
 @powershell -file %temp%\Rep.ps1
+copy /Y %mscluCfg% %root%\drop\clurun\osx.10.10-x64
+copy /Y %mscluCfg% %root%\drop\clurun\ubuntu.14.04-x64
 
 for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
 	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
@@ -38,7 +40,23 @@ for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
 	%root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
 )
 
-REM Replace *.exe with static copy for non-Windows drops
+REM Build indexes for all drops using Windows exes
+echo Get-ChildItem "%root%\drop\clurun\win7-x64" -Filter "*.exe" -Recurse ^|` 						> %temp%\BuildIndexes.ps1
+echo     %%{  														>> %temp%\BuildIndexes.ps1
+echo         if ($_.Name -ne "CoreConsole.exe" -and $_.Name -ne "clurun.exe" -and $_.Name -ne "Microsoft.CLU.exe")  	>> %temp%\BuildIndexes.ps1
+echo         { 														>> %temp%\BuildIndexes.ps1
+echo             cd $_.Directory 											>> %temp%\BuildIndexes.ps1
+echo		 Write-Host "$($_.FullName) --buildIndex"								>> %temp%\BuildIndexes.ps1
+echo             Invoke-Expression "$($_.FullName) --buildIndex" 							>> %temp%\BuildIndexes.ps1
+echo 		 Copy-Item -Force "$($_.Directory)\..\..\_indexes\" 							>> %temp%\BuildIndexes.ps1
+echo			"%root%\drop\clurun\osx.10.10-x64\pkgs\$($_.BaseName).osx.10.10-x64\0.0.1\_indexes\"		>> %temp%\BuildIndexes.ps1
+echo 		 Copy-Item -Force "$($_.Directory)\..\..\_indexes\" 							>> %temp%\BuildIndexes.ps1
+echo			"%root%\drop\clurun\ubuntu.14.04-x64\pkgs\$($_.BaseName).ubuntu.14.04-x64\0.0.1\_indexes\"	>> %temp%\BuildIndexes.ps1
+echo         } 														>> %temp%\BuildIndexes.ps1
+echo     } 														>> %temp%\BuildIndexes.ps1
+@powershell -file %temp%\BuildIndexes.ps1 
+
+REM In non-Windows, replace *.exe with static copy of CoreConsole
 echo param([string] $runtime) > %temp%\FixNonWindowsExes.ps1
 echo Get-ChildItem %root%\drop\clurun\$runtime -Recurse -Include *.exe ^| %%{ Copy-Item -Path "%root%\tools\CLU\$runtime\coreconsole" -Destination "$($_.DirectoryName)\$($_.BaseName)" -Force } >> %temp%\FixNonWindowsExes.ps1
 @powershell -file %temp%\FixNonWindowsExes.ps1 -runtime ubuntu.14.04-x64 
