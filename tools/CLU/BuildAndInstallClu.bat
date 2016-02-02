@@ -74,3 +74,6 @@ copy /Y %azuresh% %root%\drop\clurun\ubuntu.14.04-x64\az
 
 REM, windows version also needs it for bash based testing
 copy /Y %~dp0\az.win.sh %root%\drop\clurun\win7-x64\az
+
+REM, copy the Windows batch file
+copy /Y %root%\tools\clu\az.cmd %root%\drop\clurun\win7-x64\
