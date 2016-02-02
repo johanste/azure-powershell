@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace clurun
@@ -32,7 +33,7 @@ namespace clurun
             }
 
             string argsString = string.Join(" ", args);
-            string[] indexFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.idx", SearchOption.AllDirectories);
+            string[] indexFiles = Directory.GetFiles(GetExeDirectory(), "*.idx", SearchOption.AllDirectories);
 
             var commands = indexFiles
                 .SelectMany(f => File.ReadAllLines(f))
@@ -52,10 +53,16 @@ namespace clurun
             return Execute(command, args);
         }
 
+        private static string GetExeDirectory()
+        {
+            var assemblyLocation = typeof(Program).GetTypeInfo().Assembly.Location;
+            return Path.GetDirectoryName(assemblyLocation);
+        }
+
         private static int Execute(CommandIndex command, string[] args)
         {
             string extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "";
-            string executablePath = Directory.GetFiles(Directory.GetCurrentDirectory(), 
+            string executablePath = Directory.GetFiles(GetExeDirectory(), 
                 command.Package + extension, SearchOption.AllDirectories).FirstOrDefault();
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -69,9 +76,16 @@ namespace clurun
 
         private static void ShowHelp(string argsString, IEnumerable<CommandIndex> commands)
         {
+            bool found = false;
             foreach (var c in commands.Where(c => c.Args.StartsWith(argsString)))
             {
+                found = true;
                 Console.WriteLine(c.Args);
+            }
+
+            if (!found)
+            {
+                Console.WriteLine("Couldn't find any command starting with " + argsString);
             }
         }
     }

@@ -9,6 +9,7 @@ namespace Microsoft.CLU.Test
 {
 
     [Cmdlet(VerbsCommon.Show, "Success")]
+    [CliCommandAlias("returncode show")]
     public class ShowSuccess: PSCmdlet
     {
         [Parameter()]

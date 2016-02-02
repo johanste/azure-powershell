@@ -23,6 +23,13 @@ namespace Microsoft.CLU.CommandPackage
     {
         public static int Handle(PackageConfig config, DirectoryInfo baseDirectory, string[] args)
         {
+            var debugClu = Environment.GetEnvironmentVariable("DebugCLU");
+            if (!String.IsNullOrEmpty(debugClu))
+            {
+                Console.WriteLine("This is your chance to attach a debugger...");
+                Console.ReadLine();
+            }
+
             List<string> freeForAllArguments;
             List<string> escapedArguments;
 
