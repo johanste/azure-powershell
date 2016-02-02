@@ -33,10 +33,15 @@ namespace clurun
 
             string argsString = string.Join(" ", args);
             string[] indexFiles = Directory.GetFiles(Directory.GetCurrentDirectory(), "*.idx", SearchOption.AllDirectories);
+
             var commands = indexFiles
                 .SelectMany(f => File.ReadAllLines(f))
                 .Select(f => new CommandIndex(f));
-            var command = commands.OrderByDescending(c => CommandMatcher.GetMatchScore(c.Args, argsString)).FirstOrDefault(c => argsString.Contains(c.Args));
+
+            var command = commands
+                .OrderByDescending(c => 
+                    CommandMatcher.GetMatchScore(c.Args, argsString))
+                    .FirstOrDefault(c => argsString.Contains(c.Args));
 
             if (command == null)
             {
@@ -50,7 +55,8 @@ namespace clurun
         private static int Execute(CommandIndex command, string[] args)
         {
             string extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "";
-            string executablePath = Directory.GetFiles(Directory.GetCurrentDirectory(), command.Package + extension, SearchOption.AllDirectories).FirstOrDefault();
+            string executablePath = Directory.GetFiles(Directory.GetCurrentDirectory(), 
+                command.Package + extension, SearchOption.AllDirectories).FirstOrDefault();
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = executablePath;
