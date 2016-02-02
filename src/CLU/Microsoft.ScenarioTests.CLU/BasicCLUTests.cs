@@ -19,6 +19,8 @@ namespace Microsoft.Azure.Commands.Resources.Test
         {
             CleanUp();
 
+            Assert.NotEmpty(pkgRoot);
+
             ExecuteProcess("powershell", $@" -ExecutionPolicy Bypass -Command 
                 ""& {pkgRoot}\..\..\..\..\tools\CLU\BuildDrop.ps1 -commandPackagesToBuild Microsoft.ScenarioTests.CLU -excludeCluRun""");
 

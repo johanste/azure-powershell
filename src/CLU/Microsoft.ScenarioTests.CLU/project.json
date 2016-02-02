@@ -30,5 +30,8 @@
     "xunit.runner.dnx": "2.1.0-rc1-build204",
     "Commands.ScenarioTests.ResourceManager.Common": ""
   },
-  "compilationOptions": { "emitEntryPoint": true }
+  "compilationOptions": { "emitEntryPoint": true },
+  "commands": {
+    "test": "xunit.runner.dnx"
+  }
 }
