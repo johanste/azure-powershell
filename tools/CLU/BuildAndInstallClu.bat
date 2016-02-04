@@ -38,6 +38,7 @@ for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.ScenarioTests.CLU.%%i
 )
 
 REM Build indexes for all drops using Windows exes

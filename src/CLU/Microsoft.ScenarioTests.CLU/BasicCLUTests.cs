@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Commands.ScenarioTest;
+﻿using Microsoft.Azure.Commands.Common.ScenarioTest;
+using Microsoft.Azure.Commands.ScenarioTest;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,76 +13,37 @@ namespace Microsoft.Azure.Commands.Resources.Test
 {
     public class BasicCLUTests
     {
-        private string pkgRoot = Environment.GetEnvironmentVariable("PackagesRootPath");
-        private string packageExe;
+        private string bashExe;
+        private string testLocation;
+        private string dropLocation;
+        private string runtime;
 
         public BasicCLUTests()
         {
-            CleanUp();
+            //debug
+            //Environment.SetEnvironmentVariable("PackagesRootPath", @"C:\johanste-azure-powershell\drop\clurun\win7-x64\pkgs");
 
+            string pkgRoot = Environment.GetEnvironmentVariable("PackagesRootPath");
             Assert.NotEmpty(pkgRoot);
 
-            ExecuteProcess("powershell", $@" -ExecutionPolicy Bypass -Command 
-                ""& {pkgRoot}\..\..\..\..\tools\CLU\BuildDrop.ps1 -commandPackagesToBuild Microsoft.ScenarioTests.CLU -excludeCluRun""");
-
-            ExecuteProcess($@"{pkgRoot}\..\clurun.exe", "--install Microsoft.ScenarioTests.CLU.win7-x64");
-
-            packageExe = $@"{pkgRoot}\Microsoft.ScenarioTests.CLU.win7-x64\0.0.1\lib\dnxcore50\Microsoft.ScenarioTests.CLU.exe";
-            ExecuteProcess(packageExe, "--buildIndex");
-        }
-
-        ~BasicCLUTests()
-        {
-            CleanUp();
+            bashExe = $@"{Environment.GetEnvironmentVariable("ProgramW6432")}\Git\bin\bash.exe";
+            testLocation = $@"{pkgRoot.Replace("C:", "/C")}\..\..\..\..\src\CLU\Microsoft.ScenarioTests.CLU\Tests\BasicCLUTests.sh";
+            dropLocation = $@"{pkgRoot}\..";
+            runtime = "win7-x64";
         }
 
         [Fact]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void DirectExeNamedCommand()
+        public void BasicCLUCommandTest()
         {
-            ExecuteProcess(packageExe, "returncode show");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void DirectExeDefaultNamedCommandWithArgs()
-        {
-            ExecuteProcess(packageExe, "progress show --Steps 5");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void DispatcherNamedCommand()
-        {
-            ExecuteProcess($@"{pkgRoot}\..\az.cmd", "returncode show");
-        }
-
-        [Fact]
-        [Trait(Category.AcceptanceType, Category.CheckIn)]
-        public void DispatcherDefaultNamedCommandWithArgs()
-        {
-            ExecuteProcess($@"{pkgRoot}\..\az.cmd", "progress show --Steps 5");
+            ExecuteProcess(bashExe, $"{testLocation} {dropLocation} {runtime}");
         }
 
         private static void ExecuteProcess(string fileName, string arguments)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo()
-            {
-                FileName = fileName,
-                Arguments = arguments
-            };
-            Process process = Process.Start(startInfo);
-            process.WaitForExit();
-            Assert.Equal(0, process.ExitCode);
-        }
-
-        private void CleanUp()
-        {
-            string dir = $@"{pkgRoot}\Microsoft.ScenarioTests.CLU.win7-x64";
-            if (Directory.Exists(dir))
-            {
-                Directory.Delete(dir, true);
-            }
+            Environment.SetEnvironmentVariable("Path", $"{Environment.GetEnvironmentVariable("Path")};{Path.GetDirectoryName(fileName)}");
+            ProcessHelper helper = new ProcessHelper(Directory.GetDirectoryRoot(fileName), fileName, arguments.Split(' '));
+            Assert.Equal(0, helper.StartAndWaitForExit());
         }
     }
 }
