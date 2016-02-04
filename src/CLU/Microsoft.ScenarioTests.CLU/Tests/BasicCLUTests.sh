@@ -2,6 +2,7 @@
 set -e
 DROPROOT=$1
 RUNTIME=$2
+STORAGECONTAINER=https://clutest.blob.core.windows.net/testpackages
 
 usage () {
 	printf "\nUsage: <script> <DropRoot> <Runtime>\nExample: $0 ~/clurun/osx.10.10-x64 osx.10.10-x64"
@@ -12,6 +13,8 @@ usage () {
 
 printf "\nSetting up test package"
 TESTDIR=$(dirname $0)
+cd $TESTDIR
+curl ${STORAGECONTAINER}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz > ${TESTDIR}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz
 # To rebuild tar file: add Microsoft.ScenarioTests.CLU to BuildAndInstallCLU.bat,
 # tar -zcvf archive-name.tar.gz directory-name
 tar -C ${DROPROOT}/pkgs/ -zxvf ${TESTDIR}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz 
@@ -34,5 +37,6 @@ ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}/0.0.1/lib/dnxcore50/Micr
 
 printf "\nCleaning up test package"
 rm -R ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}
+rm ${TESTDIR}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz
 
 printf "\nSuccess!\n"
