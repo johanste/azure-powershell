@@ -1,14 +1,22 @@
-#!/bin/bash                                                                                                                                                                                                                                  set -e
+#!/bin/bash
 set -e
 DROPROOT=$1
 RUNTIME=$2
 
+usage () {
+	printf "\nUsage: <script> <DropRoot> <Runtime>\nExample: $0 ~/clurun/osx.10.10-x64 osx.10.10-x64"
+	exit -1
+}
+
+[ "$#" -eq 2 ] || usage
+
 printf "\nSetting up test package"
 TESTDIR=$(dirname $0)
-# to tar: tar -zcvf archive-name.tar.gz directory-name
+# To rebuild tar file: add Microsoft.ScenarioTests.CLU to BuildAndInstallCLU.bat,
+# tar -zcvf archive-name.tar.gz directory-name
 tar -C ${DROPROOT}/pkgs/ -zxvf ${TESTDIR}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz 
-chmod 777 -R ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}
-chmod +x -R ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}
+chmod -R +x ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}
+chmod -R 777 ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}
 
 printf "\n=== Basic CLU tests ===\n"
 
