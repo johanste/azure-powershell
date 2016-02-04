@@ -13,23 +13,32 @@ namespace Microsoft.Azure.Commands.Resources.Test
 {
     public class BasicCLUTests
     {
-        private string bashExe;
-        private string testLocation;
-        private string dropLocation;
-        private string runtime;
+        private const string bashExe = "bash.exe";
+        private const string runtime = "win7-x64";
+        private readonly string testLocation;
+        private readonly string dropLocation;
 
         public BasicCLUTests()
         {
             //debug
-            //Environment.SetEnvironmentVariable("PackagesRootPath", @"C:\johanste-azure-powershell\drop\clurun\win7-x64\pkgs");
+            Environment.SetEnvironmentVariable("Path", 
+                $@"{Environment.GetEnvironmentVariable("Path")};{Environment.GetEnvironmentVariable("ProgramW6432")}\Git\bin");
+            Environment.SetEnvironmentVariable("PackagesRootPath", @"C:\johanste-azure-powershell\drop\clurun\win7-x64\pkgs");
+
+            if (!IsInPath(bashExe))
+            {
+                throw new ArgumentException($"Couldn't find {bashExe} in PATH");
+            }
 
             string pkgRoot = Environment.GetEnvironmentVariable("PackagesRootPath");
-            Assert.NotEmpty(pkgRoot);
 
-            bashExe = $@"{Environment.GetEnvironmentVariable("ProgramW6432")}\Git\bin\bash.exe";
+            if(string.IsNullOrEmpty(pkgRoot))
+            {
+                throw new ArgumentException("Environment variable PackagesRootPath not set, please set to the pkgs location");
+            }
+
             testLocation = $@"{pkgRoot.Replace("C:", "/C")}\..\..\..\..\src\CLU\Microsoft.ScenarioTests.CLU\Tests\BasicCLUTests.sh";
             dropLocation = $@"{pkgRoot}\..";
-            runtime = "win7-x64";
         }
 
         [Fact]
@@ -44,6 +53,14 @@ namespace Microsoft.Azure.Commands.Resources.Test
             Environment.SetEnvironmentVariable("Path", $"{Environment.GetEnvironmentVariable("Path")};{Path.GetDirectoryName(fileName)}");
             ProcessHelper helper = new ProcessHelper(Directory.GetDirectoryRoot(fileName), fileName, arguments.Split(' '));
             Assert.Equal(0, helper.StartAndWaitForExit());
+        }
+
+        private bool IsInPath(string fileName)
+        {
+            return (Environment.GetEnvironmentVariable("PATH")
+                .Split(';')
+                .Select(p => Path.Combine(p, fileName))
+                .Any(p => File.Exists(p)));
         }
     }
 }
