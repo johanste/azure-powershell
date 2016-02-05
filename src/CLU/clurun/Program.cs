@@ -80,12 +80,12 @@ namespace clurun
             foreach (var c in commands.Where(c => c.Args.StartsWith(argsString)))
             {
                 found = true;
-                Console.WriteLine(c.Args);
+                Console.Error.WriteLine(c.Args);
             }
 
             if (!found)
             {
-                Console.WriteLine("Couldn't find any command starting with " + argsString);
+                Console.Error.WriteLine("Couldn't find any command starting with " + argsString);
             }
         }
     }

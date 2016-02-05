@@ -31,14 +31,6 @@ if (!(Test-Path -Path "$dropLocation\CommandRepo" -PathType Container))
     mkdir "$dropLocation\CommandRepo"
 }
 
-foreach ($runtime in $runtimes)
-{ 
-    if (!(Test-Path -Path "$dropLocation\CommandRepo\$runtime" -PathType Container))
-    {
-        mkdir "$dropLocation\CommandRepo\$runtime"
-    }
-}
-
 if (!(Test-Path -Path "$dropLocation\clurun" -PathType Container))
 {
     mkdir "$dropLocation\clurun"
@@ -68,7 +60,7 @@ foreach($commandPackage in $commandPackages)
         $jobs += @((start-job -Name "$commandPackageName $runtime" `
         {  
             param($buildPackageScriptPath, $commandPackageDir, $commandPackageName, $buildOutputDirectory, $runtime, $packageVersion, $dropLocation)
-            Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo\$runtime $runtime"
+            Invoke-Expression "& $buildPackageScriptPath $commandPackageDir $commandPackageName $buildOutputDirectory\$runtime $packageVersion $dropLocation\CommandRepo $runtime"
         } -Arg $buildPackageScriptPath, $commandPackageDir, $commandPackageName, $buildOutputDirectory, $runtime, $packageVersion, $dropLocation))
     }
 }

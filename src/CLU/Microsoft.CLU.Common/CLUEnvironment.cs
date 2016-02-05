@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Microsoft.CLU
 {
@@ -228,7 +229,7 @@ namespace Microsoft.CLU
             {
                 get
                 {
-                    return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows);
+                    return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
                 }
             }
 
@@ -250,7 +251,7 @@ namespace Microsoft.CLU
             {
                 get
                 {
-                    return System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX);
+                    return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
                 }
             }
 
@@ -285,6 +286,38 @@ namespace Microsoft.CLU
                 {
                     return "*.lx";
                 }
+            }
+
+            /// <summary>
+            /// The extension executables have on the current platform
+            /// </summary>
+            public static string ExecutableExtension
+            {
+                get
+                {
+                    return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "";
+                }
+            }
+
+            /// <summary>
+            /// Get the current runtime in the format of the package/dir naming convention
+            /// </summary>
+            /// <returns></returns>
+            public static string GetCurrentRuntime()
+            {
+                if (Platform.IsWindows)
+                {
+                    return Constants.WindowsPlatformId;
+                }
+                if (Platform.IsMacOSX)
+                {
+                    return Constants.OsXPlatformId;
+                }
+                if (Platform.IsUnix)
+                {
+                    return Constants.UbuntuPlatformId;
+                }
+                throw new PlatformNotSupportedException("Couldn't identify runtime platform");
             }
         }
 

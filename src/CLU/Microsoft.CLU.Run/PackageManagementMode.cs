@@ -7,9 +7,12 @@ using NuGet.Versioning;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using static Microsoft.CLU.CLUEnvironment;
 
 namespace Microsoft.CLU.Run
 {
@@ -215,6 +218,39 @@ namespace Microsoft.CLU.Run
             CLUEnvironment.Console.WriteLine(caption, packageName);
 
             _manager.InstallPackage(package, false, false);
+
+            BuildIndexes(this._packagesRootPath, version, packageName);
+        }
+
+        private void BuildIndexes(string packagesPath, string version, string packageName)
+        {
+            // Only build indexes if the package matches the current runtime
+            string currentRuntime = Platform.GetCurrentRuntime();
+            if (!packageName.Contains(currentRuntime))
+            {
+                return;
+            }
+
+            string basePackageName = string.Join(".", packageName.Split('.').Where(s => s != currentRuntime));
+            string executablePath = Path.Combine(
+                packagesPath, 
+                packageName,
+                version == null ? Constants.DefaultRuntimeVersion : version,
+                Constants.LibFolder,
+                Constants.DNXCORE50,
+                basePackageName + Platform.ExecutableExtension);
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = executablePath;
+            startInfo.Arguments = Constants.BuildIndexToken;
+
+            Process process = Process.Start(startInfo);
+            process.WaitForExit();
+            if(process.ExitCode != 0)
+            {
+                CLUEnvironment.Console.WriteErrorLine($"BuildIndex failed with code {process.ExitCode}");
+            }
+
         }
 
         /// <summary>

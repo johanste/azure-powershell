@@ -6,13 +6,12 @@ using NuGet.Commands;
 using NuGet.Configuration;
 using NuGet.ProjectModel;
 using NuGet.Versioning;
-using Microsoft.CLU.Common;
 
 namespace CLU.Packages
 {
     public class Logger : NuGet.Logging.ILogger
     {
-        public void LogDebug(string data) { Console.WriteLine($"Debug: {data}");  }
+        public void LogDebug(string data) { Console.WriteLine($"Debug: {data}"); }
 
         public void LogVerbose(string data) { Console.WriteLine($"Verbose: {data}"); }
 
@@ -84,7 +83,7 @@ namespace CLU.Packages
             return _name;
         }
 
-        public string Name {  get { return _name;  } }
+        public string Name { get { return _name; } }
 
         public IEnumerable<DependencySet> DependencySets
         {
@@ -148,7 +147,6 @@ namespace CLU.Packages
 
     public class PackageManager
     {
-        private string[] _packageSources;
         private string _repository;
         private string _packagePath;
 
@@ -162,7 +160,6 @@ namespace CLU.Packages
         {
             this._repository = repository.Path;
             this._packagePath = packagePath;
-            this._packageSources = Constants.Runtimes.Select(r => Path.Combine(this._repository, r)).ToArray();
         }
 
         public void UninstallPackage(string name, SemanticVersion version, bool one, bool two)
@@ -174,12 +171,12 @@ namespace CLU.Packages
             }
 
             var installedPackagePath = this.GetInstalledPackagePath(name);
-            if (installedPackagePath != null) 
+            if (installedPackagePath != null)
             {
                 // The full path to the package is .../pkgs/<pkg name>/<version>
                 // We intend to delete the <version> part recursively (everything in this package)
                 // and then delete the parent if it is now empty...
-                try 
+                try
                 {
                     System.IO.Directory.Delete(installedPackagePath, true);
                     var parentDirectory = System.IO.Directory.GetParent(installedPackagePath);
@@ -193,7 +190,7 @@ namespace CLU.Packages
                     // Failed to remove directory from disk...
                 }
             }
-            
+
             var packageUninstalled = PackageUninstalled;
             if (packageUninstalled != null)
             {
@@ -230,12 +227,7 @@ namespace CLU.Packages
 
         public void InstallPackage(IPackage package, bool one, bool two)
         {
-            var result = InstallPackageAsync(
-                package.Name,
-                package.Version != null ? package.Version.ToString() : "*",
-                this._packageSources,
-                this._packagePath
-                ).Result;
+            var result = InstallPackageAsync(package.Name, package.Version != null ? package.Version.ToString() : "*", new string[] { this._repository }, this._packagePath).Result;
 
             var packageInstalled = PackageInstalled;
             if (packageInstalled != null)

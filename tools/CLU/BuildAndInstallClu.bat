@@ -29,7 +29,10 @@ echo ^(Get-Content "%mscluCfg%"^) ^| ForEach-Object { $_ -replace "TOFILL", "%ro
 copy /Y %mscluCfg% %root%\drop\clurun\osx.10.10-x64
 copy /Y %mscluCfg% %root%\drop\clurun\ubuntu.14.04-x64
 
-for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
+:: windows needs to be last since we copy the other runtimes from there to the drop folder
+for %%i IN ("ubuntu.14.04-x64" "osx.10.10-x64" "win7-x64") DO (
+        cd %root%\drop\clurun\win7-x64 
+        rd pkgs /q /s        
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
@@ -39,17 +42,18 @@ for %%i IN ("win7-x64" "ubuntu.14.04-x64" "osx.10.10-x64") DO (
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.ScenarioTests.CLU.%%i
+	if %%i neq "win7-x64" rd ..\%%i\pkgs /q /s
+        if %%i neq "win7-x64" move /Y pkgs ..\%%i\
 )
 
-REM Build indexes for all drops using Windows exes
+REM Copy indexes for non-Windows drops so we can fully build all packages on Windows
 echo Get-ChildItem "%root%\drop\clurun\win7-x64" -Filter "*.exe" -Recurse ^|`                                                                                         > %temp%\BuildIndexes.ps1
 echo     %%{                                                                                                                                                          >> %temp%\BuildIndexes.ps1
 echo         if ($_.Name -ne "CoreConsole.exe" -and $_.Name -ne "clurun.exe" -and $_.Name -ne "Microsoft.CLU.exe")                                                    >> %temp%\BuildIndexes.ps1
 echo         {                                                                                                                                                        >> %temp%\BuildIndexes.ps1
 echo             cd $_.Directory                                                                                                                                      >> %temp%\BuildIndexes.ps1
-echo             Invoke-Expression "$($_.FullName) --buildIndex"                                                                                                      >> %temp%\BuildIndexes.ps1
-echo                  Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%root%\drop\clurun\osx.10.10-x64\pkgs\$($_.BaseName).osx.10.10-x64\0.0.1\"         >> %temp%\BuildIndexes.ps1
-echo                  Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%root%\drop\clurun\ubuntu.14.04-x64\pkgs\$($_.BaseName).ubuntu.14.04-x64\0.0.1\"   >> %temp%\BuildIndexes.ps1
+echo             Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%root%\drop\clurun\osx.10.10-x64\pkgs\$($_.BaseName).osx.10.10-x64\0.0.1\"              >> %temp%\BuildIndexes.ps1
+echo             Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%root%\drop\clurun\ubuntu.14.04-x64\pkgs\$($_.BaseName).ubuntu.14.04-x64\0.0.1\"        >> %temp%\BuildIndexes.ps1
 echo         }                                                                                                                                                        >> %temp%\BuildIndexes.ps1
 echo     }                                                                                                                                                            >> %temp%\BuildIndexes.ps1
 @powershell -file %temp%\BuildIndexes.ps1 
