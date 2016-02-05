@@ -32,8 +32,8 @@ copy /Y %mscluCfg% %root%\drop\clurun\ubuntu.14.04-x64
 :: windows needs to be last since we copy the other runtimes from there to the drop folder
 for %%i IN ("ubuntu.14.04-x64" "osx.10.10-x64" "win7-x64") DO (
         cd %root%\drop\clurun\win7-x64 
-        rd pkgs /q /s        
-        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
+	call :DelFolder pkgs     
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.Cmdlets.%%i
@@ -41,8 +41,7 @@ for %%i IN ("ubuntu.14.04-x64" "osx.10.10-x64" "win7-x64") DO (
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
-        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.ScenarioTests.CLU.%%i
-	if %%i neq "win7-x64" rd ..\%%i\pkgs /q /s
+	if %%i neq "win7-x64" call :DelFolder ..\%%i\pkgs
         if %%i neq "win7-x64" move /Y pkgs ..\%%i\
 )
 
@@ -82,3 +81,11 @@ copy /Y %~dp0\az.win.sh %root%\drop\clurun\win7-x64\az
 
 REM, copy the Windows batch file
 copy /Y %root%\tools\clu\az.cmd %root%\drop\clurun\win7-x64\
+
+
+goto :eof
+:DelFolder
+	if exist "%1" (
+		rd "%1" /q /s
+	)
+ exit /b 0
