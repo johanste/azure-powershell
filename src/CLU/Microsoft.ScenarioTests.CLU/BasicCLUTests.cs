@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -32,7 +33,8 @@ namespace Microsoft.Azure.Commands.Resources.Test
                 throw new ArgumentException("Environment variable PackagesRootPath not set, please set to the pkgs location");
             }
 
-            testLocation = $@"{pkgRoot.Replace("C:", "/C")}\..\..\..\..\src\CLU\Microsoft.ScenarioTests.CLU\Tests\BasicCLUTests.sh";
+            string scriptPkgRoot = Regex.Replace(pkgRoot, "^(?<drive>.):", "/$1");
+            testLocation = $@"{scriptPkgRoot}\..\..\..\..\src\CLU\Microsoft.ScenarioTests.CLU\Tests\BasicCLUTests.sh";
             dropLocation = $@"{pkgRoot}\..";
         }
 
