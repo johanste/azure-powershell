@@ -33,7 +33,7 @@ copy /Y %mscluCfg% %root%\drop\clurun\ubuntu.14.04-x64
 for %%i IN ("ubuntu.14.04-x64" "osx.10.10-x64" "win7-x64") DO (
         cd %root%\drop\clurun\win7-x64 
 	call :DelFolder pkgs     
-        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.%%i
+        %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.Cmdlets.%%i
@@ -56,6 +56,7 @@ echo             Copy-Item -Force -Recurse "$($_.Directory)\..\..\_indexes\" "%r
 echo         }                                                                                                                                                        >> %temp%\BuildIndexes.ps1
 echo     }                                                                                                                                                            >> %temp%\BuildIndexes.ps1
 @powershell -file %temp%\BuildIndexes.ps1 
+del %root%\drop\clurun\BuildIndex.* /s
 
 REM In non-Windows, replace *.exe with static copy of CoreConsole
 echo param([string] $runtime) > %temp%\FixNonWindowsExes.ps1

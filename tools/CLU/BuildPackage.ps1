@@ -28,6 +28,10 @@ if (Test-Path $cmdletsDir\content)
     Copy-Item -Path $cmdletsDir\content -Destination $packageSource\content -Recurse -Force
 }
 Copy-Item -Path $cmdletsDir\*xml -Destination $packageSource\content -Force
+if (Test-Path $cmdletsDir\BuildIndex.cmd)
+{
+    Copy-Item -Path $cmdletsDir\BuildIndex.cmd -Destination $packageSource -Force
+}
 
 $nuSpecTemplate = (Get-ChildItem ([System.IO.Path]::Combine($cmdletsDir, ($packageId + ".nuspec.template"))))
 $nuSpecOutput = [System.IO.Path]::Combine($packageSource, ($packageId + ".$runtimeType.nuspec"))

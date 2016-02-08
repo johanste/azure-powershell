@@ -300,6 +300,17 @@ namespace Microsoft.CLU
             }
 
             /// <summary>
+            /// The extension scripts have on the current platform
+            /// </summary>
+            public static string ScriptExtension
+            {
+                get
+                {
+                    return RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".cmd" : ".sh";
+                }
+            }
+
+            /// <summary>
             /// Get the current runtime in the format of the package/dir naming convention
             /// </summary>
             /// <returns></returns>

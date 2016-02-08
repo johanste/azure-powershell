@@ -1,1 +1,1 @@
-call %~dp0clurun.exe %*
+@call %~dp0clurun.exe %*

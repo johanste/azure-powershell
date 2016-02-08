@@ -224,6 +224,12 @@ namespace Microsoft.CLU.Run
 
         private void BuildIndexes(string packagesPath, string version, string packageName)
         {
+            // When exe names don't match their package name, there is no way to find the exe to build indexes
+            // (since executables don't have extenstion on non-Windows).
+            // It is recommended that the package and executable name match.  If they do not, you must include a
+            // BuildIndex.cmd and BuildIndex.sh file so the package can be installed successfully on each platform.
+            const string buildPackageCommandName = "BuildIndex";
+
             // Only build indexes if the package matches the current runtime
             string currentRuntime = Platform.GetCurrentRuntime();
             if (!packageName.Contains(currentRuntime))
@@ -232,13 +238,15 @@ namespace Microsoft.CLU.Run
             }
 
             string basePackageName = string.Join(".", packageName.Split('.').Where(s => s != currentRuntime));
-            string executablePath = Path.Combine(
+            string executableDir = Path.Combine(
                 packagesPath, 
                 packageName,
                 version == null ? Constants.DefaultRuntimeVersion : version,
                 Constants.LibFolder,
-                Constants.DNXCORE50,
-                basePackageName + Platform.ExecutableExtension);
+                Constants.DNXCORE50);
+            string exePath = Path.Combine(executableDir, basePackageName + Platform.ExecutableExtension);
+            string scriptPath = Path.Combine(executableDir, buildPackageCommandName + Platform.ScriptExtension);
+            string executablePath = File.Exists(exePath) ? exePath : scriptPath;
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = executablePath;
@@ -250,7 +258,6 @@ namespace Microsoft.CLU.Run
             {
                 CLUEnvironment.Console.WriteErrorLine($"BuildIndex failed with code {process.ExitCode}");
             }
-
         }
 
         /// <summary>
