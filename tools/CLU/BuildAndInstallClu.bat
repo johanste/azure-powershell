@@ -29,10 +29,10 @@ echo ^(Get-Content "%mscluCfg%"^) ^| ForEach-Object { $_ -replace "TOFILL", "%ro
 copy /Y %mscluCfg% %root%\drop\clurun\osx.10.10-x64
 copy /Y %mscluCfg% %root%\drop\clurun\ubuntu.14.04-x64
 
-:: windows needs to be last since we copy the other runtimes from there to the drop folder
+REM Windows needs to be last since we copy the other runtimes from there to the drop folder
 for %%i IN ("ubuntu.14.04-x64" "osx.10.10-x64" "win7-x64") DO (
         cd %root%\drop\clurun\win7-x64 
-	call :DelFolder pkgs     
+        call :DelFolder pkgs     
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.CLU.Commands.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Profile.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Resources.%%i
@@ -41,7 +41,7 @@ for %%i IN ("ubuntu.14.04-x64" "osx.10.10-x64" "win7-x64") DO (
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Network.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Management.Storage.%%i
         %root%\drop\clurun\win7-x64\clurun.exe --install Microsoft.Azure.Commands.Compute.%%i
-	if %%i neq "win7-x64" call :DelFolder ..\%%i\pkgs
+        if %%i neq "win7-x64" call :DelFolder ..\%%i\pkgs
         if %%i neq "win7-x64" move /Y pkgs ..\%%i\
 )
 

@@ -20,11 +20,6 @@ namespace Microsoft.Azure.Commands.Resources.Test
 
         public BasicCLUTests()
         {
-            //debug
-            Environment.SetEnvironmentVariable("Path", 
-                $@"{Environment.GetEnvironmentVariable("Path")};{Environment.GetEnvironmentVariable("ProgramW6432")}\Git\bin");
-            Environment.SetEnvironmentVariable("PackagesRootPath", @"C:\johanste-azure-powershell\drop\clurun\win7-x64\pkgs");
-
             if (!IsInPath(bashExe))
             {
                 throw new ArgumentException($"Couldn't find {bashExe} in PATH");

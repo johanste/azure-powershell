@@ -228,7 +228,7 @@ namespace Microsoft.CLU.Run
             // (since executables don't have extenstion on non-Windows).
             // It is recommended that the package and executable name match.  If they do not, you must include a
             // BuildIndex.cmd and BuildIndex.sh file so the package can be installed successfully on each platform.
-            const string buildPackageCommandName = "BuildIndex";
+            const string buildIndexCommandName = "BuildIndex";
 
             // Only build indexes if the package matches the current runtime
             string currentRuntime = Platform.GetCurrentRuntime();
@@ -245,7 +245,7 @@ namespace Microsoft.CLU.Run
                 Constants.LibFolder,
                 Constants.DNXCORE50);
             string exePath = Path.Combine(executableDir, basePackageName + Platform.ExecutableExtension);
-            string scriptPath = Path.Combine(executableDir, buildPackageCommandName + Platform.ScriptExtension);
+            string scriptPath = Path.Combine(executableDir, buildIndexCommandName + Platform.ScriptExtension);
             string executablePath = File.Exists(exePath) ? exePath : scriptPath;
 
             ProcessStartInfo startInfo = new ProcessStartInfo();

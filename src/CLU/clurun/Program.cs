@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using static Microsoft.CLU.CLUEnvironment;
 
 namespace clurun
 {
@@ -61,9 +62,10 @@ namespace clurun
 
         private static int Execute(CommandIndex command, string[] args)
         {
-            string extension = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? ".exe" : "";
-            string executablePath = Directory.GetFiles(GetExeDirectory(), 
-                command.Package + extension, SearchOption.AllDirectories).FirstOrDefault();
+            string executablePath = Directory.GetFiles(
+                GetExeDirectory(), 
+                command.Package + Platform.ExecutableExtension, 
+                SearchOption.AllDirectories).FirstOrDefault();
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = executablePath;
