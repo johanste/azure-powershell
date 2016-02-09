@@ -1,4 +1,5 @@
-﻿using Microsoft.CLU.Common.Properties;
+﻿using Microsoft.CLU;
+using Microsoft.CLU.Common.Properties;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -24,8 +25,8 @@ namespace clurun
             var debugClu = Environment.GetEnvironmentVariable("DebugCLU");
             if (!String.IsNullOrEmpty(debugClu))
             {
-                Console.WriteLine("This is your chance to attach a debugger...");
-                Console.ReadLine();
+                System.Console.WriteLine("This is your chance to attach a debugger...");
+                System.Console.ReadLine();
             }
 
             if (args.Contains("--install"))
@@ -69,7 +70,7 @@ namespace clurun
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = executablePath;
-            startInfo.Arguments = string.Join(" ", args);
+            startInfo.Arguments = string.Join(" ", args.Select(a => $"\"{a}\""));
 
             Process process = Process.Start(startInfo);
             process.WaitForExit();
@@ -82,12 +83,12 @@ namespace clurun
             foreach (var c in commands.Where(c => c.Args.StartsWith(argsString)))
             {
                 found = true;
-                Console.Error.WriteLine(c.Args);
+                System.Console.Error.WriteLine(c.Args);
             }
 
             if (!found)
             {
-                Console.Error.WriteLine("Couldn't find any command starting with " + argsString);
+                System.Console.Error.WriteLine("Couldn't find any command starting with " + argsString);
             }
         }
     }

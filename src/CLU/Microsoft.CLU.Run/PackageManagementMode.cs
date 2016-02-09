@@ -241,7 +241,7 @@ namespace Microsoft.CLU.Run
             string executableDir = Path.Combine(
                 packagesPath, 
                 packageName,
-                version == null ? Constants.DefaultRuntimeVersion : version,
+                version == null ? GetLatestVersion(packagesPath, packageName) : version,
                 Constants.LibFolder,
                 Constants.DNXCORE50);
             string exePath = Path.Combine(executableDir, basePackageName + Platform.ExecutableExtension);
@@ -258,6 +258,15 @@ namespace Microsoft.CLU.Run
             {
                 CLUEnvironment.Console.WriteErrorLine($"BuildIndex failed with code {process.ExitCode}");
             }
+        }
+
+        private string GetLatestVersion(string packagesPath, string packageName)
+        {
+            return Directory.GetDirectories(Path.Combine(packagesPath, packageName), "*", SearchOption.TopDirectoryOnly)
+                .Select(d => new Version(Path.GetFileName(d)))
+                .OrderByDescending(v => v)
+                .First()
+                .ToString();
         }
 
         /// <summary>

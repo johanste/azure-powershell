@@ -12,8 +12,8 @@ usage () {
 [ "$#" -eq 2 ] || usage
 
 printf "\nSetting up test package"
-TESTDIR=$(dirname $0)
-cd $TESTDIR
+pushd `dirname $0`
+TESTDIR=`pwd`
 curl ${STORAGECONTAINER}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz > ${TESTDIR}/Microsoft.ScenarioTests.CLU.${RUNTIME}.tar.gz
 # To rebuild tar file: add Microsoft.ScenarioTests.CLU to BuildAndInstallCLU.bat,
 # tar -zcvf archive-name.tar.gz directory-name
@@ -30,10 +30,15 @@ printf "\n2. Dispatch a command with CLI name attribute"
 ${DROPROOT}/az returncode show
 
 printf "\n3. Execute a command with no CLI name attribute directly"
-${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}/0.0.1/lib/dnxcore50/Microsoft.ScenarioTests.CLU progress show --Steps 5
+pushd ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}
+VERSIONDIR=$(find . -maxdepth 1 -mindepth 1 -name '*' -type d)
+VERSION=$(echo ${VERSIONDIR} | cut -c 3-100)
+popd
+
+${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}/${VERSION}/lib/dnxcore50/Microsoft.ScenarioTests.CLU progress show --Steps 5
 
 printf "\n4. Execute a command with CLI name attribute directly"
-${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}/0.0.1/lib/dnxcore50/Microsoft.ScenarioTests.CLU returncode show
+${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}/${VERSION}/lib/dnxcore50/Microsoft.ScenarioTests.CLU returncode show
 
 printf "\nCleaning up test package"
 rm -R ${DROPROOT}/pkgs/Microsoft.ScenarioTests.CLU.${RUNTIME}

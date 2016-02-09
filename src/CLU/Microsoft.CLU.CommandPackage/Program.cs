@@ -36,7 +36,7 @@ namespace Microsoft.CLU.CommandPackage
             SplitArguments(args, out freeForAllArguments, out escapedArguments);
 
             Func<PackageConfig, DirectoryInfo, string[], int> command;
-            if (freeForAllArguments.Contains("--buildIndex"))
+            if (freeForAllArguments. Any(a => a.Equals(Constants.BuildIndexToken, StringComparison.OrdinalIgnoreCase)))
             {
                 command = (cfg, dir, remainingArgs) =>
                 {

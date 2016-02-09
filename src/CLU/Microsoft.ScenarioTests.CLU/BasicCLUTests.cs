@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Commands.Common.ScenarioTest;
 using Microsoft.Azure.Commands.ScenarioTest;
+using Microsoft.CLU;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -26,15 +27,16 @@ namespace Microsoft.Azure.Commands.Resources.Test
                 throw new ArgumentException($"Couldn't find {bashExe} in PATH");
             }
 
-            string pkgRoot = Environment.GetEnvironmentVariable("PackagesRootPath");
+            string pkgRoot = Environment.GetEnvironmentVariable(CLUEnvironment.PackagesRootPathEnvVaribleName);
 
             if(string.IsNullOrEmpty(pkgRoot))
             {
                 throw new ArgumentException("Environment variable PackagesRootPath not set, please set to the pkgs location");
             }
 
+            const string packageName = "Microsoft.ScenarioTests.CLU";
             string scriptPkgRoot = Regex.Replace(pkgRoot, "^(?<drive>.):", "/$1");
-            testLocation = $@"{scriptPkgRoot}\..\..\..\..\src\CLU\Microsoft.ScenarioTests.CLU\Tests\BasicCLUTests.sh";
+            testLocation = $@"{scriptPkgRoot}\..\..\..\..\src\CLU\{packageName}\Tests\BasicCLUTests.sh";
             dropLocation = $@"{pkgRoot}\..";
         }
 

@@ -215,11 +215,6 @@ namespace Microsoft.CLU.Common
         /// </summary>
         internal const string DefaultRuntime = WindowsPlatformId;
 
-        /// <summary>
-        /// The default runtime version
-        /// </summary>
-        internal const string DefaultRuntimeVersion = "0.0.1";
-
         #region TODO: The constants in this region should go to resource file
 
         internal const string MissingCommandNounVerb = "Cmdlet not found";
@@ -241,6 +236,6 @@ namespace Microsoft.CLU.Common
         /// </summary>
         internal const string InstallToken = "--install";
 
-        internal const string BuildIndexToken = "--buildIndex";
+        internal const string BuildIndexToken = "--buildindex";
     }
 }

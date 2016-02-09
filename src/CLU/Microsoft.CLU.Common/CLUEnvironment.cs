@@ -21,7 +21,7 @@ namespace Microsoft.CLU
         /// <summary>
         /// Name of the environment variable holding package root path.
         /// </summary>
-        private static string PackagesRootPathEnvVaribleName = "PackagesRootPath";
+        public const string PackagesRootPathEnvVaribleName = "PackagesRootPath";
 
         /// <summary>
         /// Set the root paths.
