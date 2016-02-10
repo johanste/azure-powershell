@@ -7,9 +7,12 @@ using NuGet.Versioning;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using static Microsoft.CLU.CLUEnvironment;
 
 namespace Microsoft.CLU.Run
 {
@@ -215,6 +218,55 @@ namespace Microsoft.CLU.Run
             CLUEnvironment.Console.WriteLine(caption, packageName);
 
             _manager.InstallPackage(package, false, false);
+
+            BuildIndexes(this._packagesRootPath, version, packageName);
+        }
+
+        private void BuildIndexes(string packagesPath, string version, string packageName)
+        {
+            // When exe names don't match their package name, there is no way to find the exe to build indexes
+            // (since executables don't have extenstion on non-Windows).
+            // It is recommended that the package and executable name match.  If they do not, you must include a
+            // BuildIndex.cmd and BuildIndex.sh file so the package can be installed successfully on each platform.
+            const string buildIndexCommandName = "BuildIndex";
+
+            // Only build indexes if the package matches the current runtime
+            string currentRuntime = Platform.GetCurrentRuntime();
+            if (!packageName.Contains(currentRuntime))
+            {
+                return;
+            }
+
+            string basePackageName = string.Join(".", packageName.Split('.').Where(s => s != currentRuntime));
+            string executableDir = Path.Combine(
+                packagesPath, 
+                packageName,
+                version == null ? GetLatestVersion(packagesPath, packageName) : version,
+                Constants.LibFolder,
+                Constants.DNXCORE50);
+            string exePath = Path.Combine(executableDir, basePackageName + Platform.ExecutableExtension);
+            string scriptPath = Path.Combine(executableDir, buildIndexCommandName + Platform.ScriptExtension);
+            string executablePath = File.Exists(exePath) ? exePath : scriptPath;
+
+            ProcessStartInfo startInfo = new ProcessStartInfo();
+            startInfo.FileName = executablePath;
+            startInfo.Arguments = Constants.BuildIndexToken;
+
+            Process process = Process.Start(startInfo);
+            process.WaitForExit();
+            if(process.ExitCode != 0)
+            {
+                CLUEnvironment.Console.WriteErrorLine($"BuildIndex failed with code {process.ExitCode}");
+            }
+        }
+
+        private string GetLatestVersion(string packagesPath, string packageName)
+        {
+            return Directory.GetDirectories(Path.Combine(packagesPath, packageName), "*", SearchOption.TopDirectoryOnly)
+                .Select(d => new Version(Path.GetFileName(d)))
+                .OrderByDescending(v => v)
+                .First()
+                .ToString();
         }
 
         /// <summary>

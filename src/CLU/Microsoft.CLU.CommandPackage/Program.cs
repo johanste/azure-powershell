@@ -23,13 +23,20 @@ namespace Microsoft.CLU.CommandPackage
     {
         public static int Handle(PackageConfig config, DirectoryInfo baseDirectory, string[] args)
         {
+            var debugClu = Environment.GetEnvironmentVariable("DebugCLU");
+            if (!String.IsNullOrEmpty(debugClu))
+            {
+                Console.WriteLine("This is your chance to attach a debugger...");
+                Console.ReadLine();
+            }
+
             List<string> freeForAllArguments;
             List<string> escapedArguments;
 
             SplitArguments(args, out freeForAllArguments, out escapedArguments);
 
             Func<PackageConfig, DirectoryInfo, string[], int> command;
-            if (freeForAllArguments.Contains("--buildIndex"))
+            if (freeForAllArguments. Any(a => a.Equals(Constants.BuildIndexToken, StringComparison.OrdinalIgnoreCase)))
             {
                 command = (cfg, dir, remainingArgs) =>
                 {

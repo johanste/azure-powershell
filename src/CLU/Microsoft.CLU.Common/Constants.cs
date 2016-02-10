@@ -190,9 +190,36 @@ namespace Microsoft.CLU.Common
         /// </summary>
         internal const string FileArgumentPrefix = "@";
 
+        /// <summary>
+        /// Drop ID for Windows
+        /// </summary>
+        internal const string WindowsPlatformId = "win7-x64";
+
+        /// <summary>
+        /// Drop ID for OSX
+        /// </summary>
+        internal const string OsXPlatformId = "osx.10.10-x64";
+
+        /// <summary>
+        /// Drop ID for Ubuntu
+        /// </summary>
+        internal const string UbuntuPlatformId = "ubuntu.14.04-x64";
+
+        /// <summary>
+        /// All the supported runtime platforms
+        /// </summary>
+        internal static readonly string[] Runtimes = new string[] { WindowsPlatformId, OsXPlatformId, UbuntuPlatformId };
+
+        /// <summary>
+        /// The default runtime platform
+        /// </summary>
+        internal const string DefaultRuntime = WindowsPlatformId;
+
         #region TODO: The constants in this region should go to resource file
 
         internal const string MissingCommandNounVerb = "Cmdlet not found";
+
+        #endregion
 
         /// <summary>
         /// The environment variable holding current session ID.
@@ -204,6 +231,11 @@ namespace Microsoft.CLU.Common
         /// </summary>
         internal const string DefaultSessionID = "default";
 
-        #endregion
+        /// <summary>
+        /// The install token passed to clurun to invoke package management
+        /// </summary>
+        internal const string InstallToken = "--install";
+
+        internal const string BuildIndexToken = "--buildindex";
     }
 }

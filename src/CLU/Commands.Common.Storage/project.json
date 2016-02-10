@@ -10,9 +10,15 @@
       "dependencies": {
         "Microsoft.NETCore": "5.0.1-beta-23516",
         "Microsoft.NETCore.Platforms": "1.0.1-beta-23516",
-       "Microsoft.CSharp": "4.0.1-beta-23516"
+        "Microsoft.CSharp": "4.0.1-beta-23516"
       }
     }
+  },
+  "runtimes": {
+    "osx.10.10-x64": { },
+    "ubuntu.14.04-x64": { },
+    "win7-x64": { },
+    "win7-x86": { }
   },
   "dependencies": {
     "System.Linq": "4.0.1-beta-23516",

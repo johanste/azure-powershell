@@ -16,9 +16,23 @@
       }
     }
   },
+  "runtimes": {
+    "osx.10.10-x64": { },
+    "ubuntu.14.04-x64": { },
+    "win7-x64": { },
+    "win7-x86": { }
+  },
   "dependencies": {
     "Microsoft.CLU": "",
-    "Microsoft.CLU.CommandPackage": ""
+    "Microsoft.CLU.CommandPackage": "",
+    "xunit": "2.1.0",
+    "xunit.assert": "2.1.0",
+    "xunit.runner.dnx": "2.1.0-rc1-build204",
+    "Commands.ScenarioTests.ResourceManager.Common": "",
+    "Commands.Common.ScenarioTest": ""
   },
-  "compilationOptions": { "emitEntryPoint": true }
+  "compilationOptions": { "emitEntryPoint": true },
+  "commands": {
+    "test": "xunit.runner.dnx"
+  }
 }

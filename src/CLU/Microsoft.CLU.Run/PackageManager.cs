@@ -11,7 +11,7 @@ namespace CLU.Packages
 {
     public class Logger : NuGet.Logging.ILogger
     {
-        public void LogDebug(string data) { Console.WriteLine($"Debug: {data}");  }
+        public void LogDebug(string data) { Console.WriteLine($"Debug: {data}"); }
 
         public void LogVerbose(string data) { Console.WriteLine($"Verbose: {data}"); }
 
@@ -83,7 +83,7 @@ namespace CLU.Packages
             return _name;
         }
 
-        public string Name {  get { return _name;  } }
+        public string Name { get { return _name; } }
 
         public IEnumerable<DependencySet> DependencySets
         {
@@ -171,12 +171,12 @@ namespace CLU.Packages
             }
 
             var installedPackagePath = this.GetInstalledPackagePath(name);
-            if (installedPackagePath != null) 
+            if (installedPackagePath != null)
             {
                 // The full path to the package is .../pkgs/<pkg name>/<version>
                 // We intend to delete the <version> part recursively (everything in this package)
                 // and then delete the parent if it is now empty...
-                try 
+                try
                 {
                     System.IO.Directory.Delete(installedPackagePath, true);
                     var parentDirectory = System.IO.Directory.GetParent(installedPackagePath);
@@ -190,7 +190,7 @@ namespace CLU.Packages
                     // Failed to remove directory from disk...
                 }
             }
-            
+
             var packageUninstalled = PackageUninstalled;
             if (packageUninstalled != null)
             {

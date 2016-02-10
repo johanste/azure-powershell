@@ -14,6 +14,12 @@
       }
     }
   },
+  "runtimes": {
+    "osx.10.10-x64": { },
+    "ubuntu.14.04-x64": { },
+    "win7-x64": { },
+    "win7-x86": { }
+  },
   "dependencies": {
     "System.Linq": "4.0.1-beta-23516",
     "Microsoft.CLU": "1.0.0",
@@ -50,5 +56,5 @@
     "Microsoft.Azure.Management.Resources": "3.3.1-preview",
     "Microsoft.Extensions.Caching.Memory": "1.0.0-rc1-final"
   },
-  "compilationOptions": {"emitEntryPoint": true}
+  "compilationOptions": { "emitEntryPoint": true }
 }

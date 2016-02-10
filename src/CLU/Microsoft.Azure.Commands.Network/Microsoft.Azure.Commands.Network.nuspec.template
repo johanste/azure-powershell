@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
   <metadata minClientVersion="2.5">
-    <id>Microsoft.Azure.Commands.Network</id>
+    <id>Microsoft.Azure.Commands.Network.%Runtime%</id>
     <title>Microsoft Azure Networks Cmdlets</title>
     <version>%PackageVersion%</version>
     <authors>Microsoft</authors>

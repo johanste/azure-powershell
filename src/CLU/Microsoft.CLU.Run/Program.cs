@@ -1,8 +1,11 @@
-﻿using Microsoft.CLU.Common.Properties;
+﻿using Microsoft.CLU.Common;
+using Microsoft.CLU.Common.Properties;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using static Microsoft.CLU.CLUEnvironment;
 
 namespace Microsoft.CLU.Run
 {
@@ -53,15 +56,33 @@ namespace Microsoft.CLU.Run
             }
 
             var mode = GetMode(arguments);
+
+            // Default to current runtime for package install
+            arguments = arguments
+                .Select(a => 
+                    a.Equals(Constants.InstallToken, StringComparison.OrdinalIgnoreCase) || IsRuntimeSpecified(a)
+                        ? a
+                        : $"{a}.{Platform.GetCurrentRuntime()}")
+                .ToArray();
+
             //TODO: #26 Decide the best way to find rootPath
-            var assemblyLocation = typeof(Microsoft.CLU.Common.EntryPoint).GetTypeInfo().Assembly.Location;
-            var rootPath = System.IO.Path.GetDirectoryName(assemblyLocation);
-            CLUEnvironment.SetRootPaths(rootPath);  
+            var assemblyLocation = typeof(EntryPoint).GetTypeInfo().Assembly.Location;
+            var rootPath = Path.GetDirectoryName(assemblyLocation);
+            CLUEnvironment.SetRootPaths(rootPath);
 
             // Run the command.
             return mode.Run(arguments);
         }
 
+        /// <summary>
+        /// True if a runtime platform is specified in the argument
+        /// </summary>
+        /// <param name="arguments"></param>
+        /// <returns></returns>
+        private bool IsRuntimeSpecified(string argument)
+        {
+            return Constants.Runtimes.Any(r => argument.Contains(r));
+        }
 
         private void DisplayHelp()
         {
