@@ -70,7 +70,8 @@ namespace clurun
 
             ProcessStartInfo startInfo = new ProcessStartInfo();
             startInfo.FileName = executablePath;
-            startInfo.Arguments = string.Join(" ", args.Select(a => $"\"{a}\""));
+            // Add extra quotes since we are passing on to another process
+            startInfo.Arguments = string.Join(" ", args.Select(a => $"\"{a.Replace("\"", "\"\"")}\""));
 
             Process process = Process.Start(startInfo);
             process.WaitForExit();
